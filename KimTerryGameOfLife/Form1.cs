@@ -12,8 +12,9 @@ namespace KimTerryGameOfLife
 {
     public partial class Form1 : Form
     {
+       
         // The universe array
-        bool[,] universe = new bool[5, 5];
+        bool[,] universe = new bool[60, 50];
 
         // Drawing colors
         Color gridColor = Color.Black;
@@ -25,6 +26,11 @@ namespace KimTerryGameOfLife
         // Generation count
         int generations = 0;
 
+        #region MyFields
+        bool[,] CellStates; 
+
+
+        #endregion
         public Form1()
         {
             InitializeComponent();
@@ -32,7 +38,10 @@ namespace KimTerryGameOfLife
             // Setup the timer
             timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
-            timer.Enabled = true; // start timer running
+
+            //***made change so timer does not automatically run***
+            //timer.Enabled = true; // start timer running
+
         }
 
         // Calculate the next generation of cells
@@ -55,11 +64,13 @@ namespace KimTerryGameOfLife
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
+            //***float change above
             // Calculate the width and height of each cell in pixels
             // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
-            int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
+            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
-            int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
+            float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
+
 
             // A Pen for drawing the grid lines (color, width)
             Pen gridPen = new Pen(gridColor, 1);
@@ -74,7 +85,8 @@ namespace KimTerryGameOfLife
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
                     // A rectangle to represent each cell in pixels
-                    Rectangle cellRect = Rectangle.Empty;
+                    //***changed to rectF
+                    RectangleF cellRect = Rectangle.Empty;
                     cellRect.X = x * cellWidth;
                     cellRect.Y = y * cellHeight;
                     cellRect.Width = cellWidth;
@@ -84,6 +96,9 @@ namespace KimTerryGameOfLife
                     if (universe[x, y] == true)
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
+
+                        //count alive cells
+                        
                     }
 
                     // Outline the cell with a pen
@@ -118,5 +133,6 @@ namespace KimTerryGameOfLife
                 graphicsPanel1.Invalidate();
             }
         }
+
     }
 }
