@@ -67,7 +67,7 @@ namespace KimTerryGameOfLife
             //***float change above
             // Calculate the width and height of each cell in pixels
             // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
-            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
+            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) -0.01f;
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
 
@@ -116,15 +116,16 @@ namespace KimTerryGameOfLife
             // If the left mouse button was clicked
             if (e.Button == MouseButtons.Left)
             {
+                //***float changes to clickevents
                 // Calculate the width and height of each cell in pixels
-                int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
-                int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
+                float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0);
+                float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1);
 
                 // Calculate the cell that was clicked in
                 // CELL X = MOUSE X / CELL WIDTH
-                int x = e.X / cellWidth;
+                int x = (int)(e.X / cellWidth);
                 // CELL Y = MOUSE Y / CELL HEIGHT
-                int y = e.Y / cellHeight;
+                int y = (int)(e.Y / cellHeight);
 
                 // Toggle the cell's state
                 universe[x, y] = !universe[x, y];
