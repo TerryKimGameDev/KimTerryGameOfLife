@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cells;
 using System.Windows.Forms;
 
 namespace KimTerryGameOfLife
@@ -14,7 +15,7 @@ namespace KimTerryGameOfLife
     {
        
         // The universe array
-        bool[,] universe = new bool[60, 50];
+        bool[,] universe = new bool[5, 5];
 
         // Drawing colors
         Color gridColor = Color.Black;
@@ -26,15 +27,20 @@ namespace KimTerryGameOfLife
         // Generation count
         int generations = 0;
 
-        #region MyFields
-        bool[,] CellStates; 
+        //next generation array
+        bool[,] NextGen; //this is the scratchpad
 
+        //Set the next gen array size to the univer size 
+        private void setNextGenSize()
+        {
+            NextGen = new bool[universe.GetLength(0), universe.GetLength(1)];
+        }
+        
 
-        #endregion
         public Form1()
         {
             InitializeComponent();
-
+            setNextGenSize();
             // Setup the timer
             timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
@@ -93,11 +99,12 @@ namespace KimTerryGameOfLife
                     cellRect.Height = cellHeight;
 
                     // Fill the cell with a brush if alive
-                    if (universe[x, y] == true)
+                  
+                    if (universe[x,y] == true)
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
 
-                        //count alive cells
+                        
                         
                     }
 
@@ -129,10 +136,141 @@ namespace KimTerryGameOfLife
 
                 // Toggle the cell's state
                 universe[x, y] = !universe[x, y];
-
                 // Tell Windows you need to repaint
                 graphicsPanel1.Invalidate();
             }
+        }
+
+        private void cellDies()
+        {
+
+        }
+
+        private void IniRandUniverse()
+        {
+
+        }
+
+        private int CountNeighborsFinite(int x, int y)
+
+        {
+
+            int count = 0;
+
+            int xLen = universe.GetLength(0);
+
+            int yLen = universe.GetLength(1);
+
+            for (int yOffset = -1; yOffset <= 1; yOffset++)
+
+            {
+
+                for (int xOffset = -1; xOffset <= 1; xOffset++)
+
+                {
+
+                    int xCheck = x + xOffset;
+
+                    int yCheck = y + yOffset;
+
+                    // if xOffset and yOffset are both equal to 0 then continue
+                    if (xOffset == 0 && yOffset == 0)
+                    {
+                        continue;
+                    }
+                    // if xCheck is less than 0 then continue
+                    if (xCheck < 0)
+                    {
+                        continue;
+                    }
+
+                    // if yCheck is less than 0 then continue
+                    if (yCheck < 0)
+                    {
+                        continue;
+                    }
+
+                    // if xCheck is greater than or equal too xLen then continue
+                    if (xCheck >= xLen)
+                    {
+                        continue;
+                    }
+
+                    // if yCheck is greater than or equal too yLen then continue
+                    if (yCheck >= yLen)
+                    {
+                        continue;
+                    }
+
+                    if (universe[xCheck, yCheck] == true) count++;
+
+                }
+
+            }
+
+            return count;
+
+        }
+
+        private int CountNeighborsToroidal(int x, int y)
+
+        {
+
+            int count = 0;
+
+            int xLen = universe.GetLength(0);
+
+            int yLen = universe.GetLength(1);
+
+            for (int yOffset = -1; yOffset <= 1; yOffset++)
+
+            {
+
+                for (int xOffset = -1; xOffset <= 1; xOffset++)
+
+                {
+
+                    int xCheck = x + xOffset;
+
+                    int yCheck = y + yOffset;
+
+                    // if xOffset and yOffset are both equal to 0 then continue
+                    if (xOffset == 0 && yOffset == 0)
+                    {
+                        continue;
+                    }
+                    // if xCheck is less than 0 then set to xLen - 1
+                    if (xCheck < 0)
+                    {
+                        xCheck = xLen - 1;
+                    }
+                    // if yCheck is less than 0 then set to yLen - 1
+                    if (yCheck < 0)
+                    {
+                        yCheck = yLen-1;
+                    }
+
+                    // if xCheck is greater than or equal too xLen then set to 0
+                    if (xCheck >= xLen)
+                    {
+                        xCheck = 0;
+                    }
+
+                    // if yCheck is greater than or equal too yLen then set to 0
+                    if (yCheck  >= yLen)
+                    {
+                        yCheck = 0;
+                    }
+
+
+                    if (universe[xCheck, yCheck] == true) count++;
+
+                }
+
+            }
+
+            return count;
+
         }
 
     }
