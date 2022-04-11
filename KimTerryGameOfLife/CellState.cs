@@ -14,15 +14,20 @@ namespace Cells
         //generation counter for alive cells
         public int GenCount { get; private set; }
 
+        public int neighbor { get; set; }
+
         public CellState()
         {
             GenCount = 0;
         }
-
-        public void SetLcells()
+        public void toggle()
+        {
+            Lcells = !Lcells;
+        }
+        public void SetLcells(bool tf)
         {
             //toggle state
-            Lcells = !Lcells;
+            Lcells = tf;
         }
         public bool GetCellState()
         {

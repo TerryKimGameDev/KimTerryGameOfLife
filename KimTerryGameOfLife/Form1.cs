@@ -13,9 +13,10 @@ namespace KimTerryGameOfLife
 {
     public partial class Form1 : Form
     {
-       
+
         // The universe array
-        bool[,] universe = new bool[5, 5];
+        CellState[,] universe = new CellState[5,5];
+        
 
         // Drawing colors
         Color gridColor = Color.Black;
@@ -28,14 +29,14 @@ namespace KimTerryGameOfLife
         int generations = 0;
 
         //next generation array
-        bool[,] NextGen; //this is the scratchpad
+        CellState[,] NextGen; //this is the scratchpad
 
         //Set the next gen array size to the univer size 
         private void setNextGenSize()
         {
-            NextGen = new bool[universe.GetLength(0), universe.GetLength(1)];
+            NextGen = new CellState[universe.GetLength(0), universe.GetLength(1)];
         }
-        
+
 
         public Form1()
         {
@@ -44,7 +45,14 @@ namespace KimTerryGameOfLife
             // Setup the timer
             timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
-
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    universe[i, j] = new CellState();
+                    NextGen[i, j] = new CellState();
+                }
+            }
             //***made change so timer does not automatically run***
             //timer.Enabled = true; // start timer running
 
@@ -57,9 +65,20 @@ namespace KimTerryGameOfLife
 
             // Increment generation count
             generations++;
-
+            swap();
             // Update status strip generations
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+        }
+
+        private void swap()
+        {
+            //bool[,] universe = new bool[5, 5];
+            //bool[,] scratchPad = new bool[5, 5];
+
+            // Swap them...
+            CellState[,] temp = universe;
+            universe = NextGen;
+            NextGen = temp;
         }
 
         // The event called by the timer every Interval milliseconds.
@@ -73,7 +92,7 @@ namespace KimTerryGameOfLife
             //***float change above
             // Calculate the width and height of each cell in pixels
             // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
-            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) -0.01f;
+            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
 
@@ -99,15 +118,22 @@ namespace KimTerryGameOfLife
                     cellRect.Height = cellHeight;
 
                     // Fill the cell with a brush if alive
-                  
-                    if (universe[x,y] == true)
+                    if (universe[x, y].GetCellState() == true)
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
-
-                        
-                        
                     }
+                    else
+                    {
+                        e.Graphics.FillRectangle(Brushes.White, cellRect);
+                    }
+                    int count = CountNeighborsFinite(x, y, e);
+                    //Rectext(CountNeighborsFinite(x, y, e), e, x, y, gridPen, cellBrush);
 
+                    if (count > 0)
+                    {
+                        test(e, x, y, count);
+                    }
+                    cellRules(count, x, y);
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
                 }
@@ -135,15 +161,113 @@ namespace KimTerryGameOfLife
                 int y = (int)(e.Y / cellHeight);
 
                 // Toggle the cell's state
-                universe[x, y] = !universe[x, y];
+                //universe[x, y] = !universe[x, y];
+
+                universe[x, y].toggle();
                 // Tell Windows you need to repaint
                 graphicsPanel1.Invalidate();
             }
         }
 
-        private void cellDies()
+
+        //rules for the Cell generation
+        private void cellRules(int count, int x, int y)
+        {
+            if (count < 2)
+            {
+                //NextGen[x, y] = false; //scratchpad death
+                NextGen[x, y].SetLcells(false);
+            }
+            if (count > 3)
+            {
+                //NextGen[x, y] = false;
+                NextGen[x, y].SetLcells(false);
+            }
+            if (universe[x,y].GetCellState() == true && count == 2 || count == 3)
+            {
+                //NextGen[x, y] = true;
+                NextGen[x, y].SetLcells(true);
+            }
+            if (universe[x,y].GetCellState() == false && count == 3)
+            {
+                //NextGen[x, y] = true;
+                NextGen[x, y].SetLcells(true);
+            }
+
+
+        }
+        private void test(PaintEventArgs e, int x, int y, int count)
         {
 
+            Pen gridPen = new Pen(gridColor, 1);
+
+            // A Brush for filling living cells interiors (color)
+            Brush cellBrush = new SolidBrush(cellColor);
+            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
+            // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
+            float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
+
+            Font font = new Font("Arial", 20f);
+
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.LineAlignment = StringAlignment.Center;
+
+            RectangleF rect = new RectangleF(x*cellWidth, y*cellHeight, cellWidth, cellHeight);
+            //int neighbors = 8;
+
+            if (universe[x, y].GetCellState() == true)
+            {
+                e.Graphics.FillRectangle(cellBrush, rect);
+            }
+            else
+            {
+                e.Graphics.FillRectangle(Brushes.White, rect);
+            }
+            //e.Graphics.FillRectangle(cellBrush, rect);
+            e.Graphics.DrawRectangle(gridPen, (x) * cellWidth, (y) * cellHeight, cellWidth, cellHeight);
+            e.Graphics.DrawString((count).ToString(), font, Brushes.Black, rect, stringFormat);
+
+
+            gridPen.Dispose();
+            cellBrush.Dispose();
+            graphicsPanel1.Invalidate();
+        }
+        //neighbor count display
+        private void Rectext(int count, PaintEventArgs e, int x, int y, Pen gridpen, Brush cellBrush)
+        {
+            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
+            float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
+            Font font = new Font("Arial", 20f);
+
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.LineAlignment = StringAlignment.Center;
+            RectangleF rect = RectangleF.Empty;
+
+
+            for (int yOffset = -1; yOffset <= 1; yOffset++)
+            {
+                for (int xOffset = -1; xOffset <= 1; xOffset++)
+                {
+                    rect = new RectangleF((x + xOffset) * cellWidth, (y + yOffset) * cellHeight, cellWidth, cellHeight);
+                    if (xOffset != 0 || yOffset != 0)
+                    {
+                        //if (universe[x, y] == true)
+                        {
+                            e.Graphics.FillRectangle(cellBrush, rect);
+                            e.Graphics.DrawRectangle(gridpen, (x + xOffset) * cellWidth, (y + yOffset) * cellHeight, cellWidth, cellHeight);
+                        }
+                        //else
+                        //{
+                        //    e.Graphics.FillRectangle(cellBrush, rect);
+                        //    e.Graphics.DrawRectangle(gridpen, (x + xOffset) * cellWidth, (y + yOffset) * cellHeight, cellWidth, cellHeight);
+                        //}
+                        e.Graphics.DrawString((count).ToString(), font, Brushes.Black, rect, stringFormat);
+                    }
+                }
+            }
+            //graphicsPanel1.Invalidate();
         }
 
         private void IniRandUniverse()
@@ -151,8 +275,8 @@ namespace KimTerryGameOfLife
 
         }
 
-        private int CountNeighborsFinite(int x, int y)
 
+        private int CountNeighborsFinite(int x, int y, PaintEventArgs e)
         {
 
             int count = 0;
@@ -162,17 +286,11 @@ namespace KimTerryGameOfLife
             int yLen = universe.GetLength(1);
 
             for (int yOffset = -1; yOffset <= 1; yOffset++)
-
             {
-
                 for (int xOffset = -1; xOffset <= 1; xOffset++)
-
                 {
-
                     int xCheck = x + xOffset;
-
                     int yCheck = y + yOffset;
-
                     // if xOffset and yOffset are both equal to 0 then continue
                     if (xOffset == 0 && yOffset == 0)
                     {
@@ -183,33 +301,26 @@ namespace KimTerryGameOfLife
                     {
                         continue;
                     }
-
                     // if yCheck is less than 0 then continue
                     if (yCheck < 0)
                     {
                         continue;
                     }
-
                     // if xCheck is greater than or equal too xLen then continue
                     if (xCheck >= xLen)
                     {
                         continue;
                     }
-
                     // if yCheck is greater than or equal too yLen then continue
                     if (yCheck >= yLen)
                     {
                         continue;
                     }
-
-                    if (universe[xCheck, yCheck] == true) count++;
-
+                    //test(e, xCheck, yCheck, count);
+                    if (universe[xCheck, yCheck].GetCellState() == true) count++;
                 }
-
             }
-
             return count;
-
         }
 
         private int CountNeighborsToroidal(int x, int y)
@@ -247,7 +358,7 @@ namespace KimTerryGameOfLife
                     // if yCheck is less than 0 then set to yLen - 1
                     if (yCheck < 0)
                     {
-                        yCheck = yLen-1;
+                        yCheck = yLen - 1;
                     }
 
                     // if xCheck is greater than or equal too xLen then set to 0
@@ -257,13 +368,13 @@ namespace KimTerryGameOfLife
                     }
 
                     // if yCheck is greater than or equal too yLen then set to 0
-                    if (yCheck  >= yLen)
+                    if (yCheck >= yLen)
                     {
                         yCheck = 0;
                     }
 
 
-                    if (universe[xCheck, yCheck] == true) count++;
+                    if (universe[xCheck, yCheck].GetCellState() == true) count++;
 
                 }
 
@@ -273,5 +384,9 @@ namespace KimTerryGameOfLife
 
         }
 
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            NextGeneration();
+        }
     }
 }
