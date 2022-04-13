@@ -452,7 +452,7 @@ namespace KimTerryGameOfLife
             {
                 gridColor = Color.Black;
             }
-            else gridColor = graphicsPanel1.BackColor;
+            else gridColor = Color.Empty;
             graphicsPanel1.Invalidate();
         }
 
