@@ -28,6 +28,8 @@ namespace KimTerryGameOfLife
         // Generation count
         int generations = 0;
 
+        //set world state for toroidal or finite
+        bool world = false;
         //next generation array
         CellState[,] NextGen; //this is the scratchpad
 
@@ -45,6 +47,7 @@ namespace KimTerryGameOfLife
             // Setup the timer
             timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
+
             for (int i = 0; i < 5; i++)
             {
                 for (int j = 0; j < 5; j++)
@@ -61,20 +64,16 @@ namespace KimTerryGameOfLife
         // Calculate the next generation of cells
         private void NextGeneration()
         {
-
-
             // Increment generation count
             generations++;
-            swap();
             // Update status strip generations
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            swap();
         }
 
         private void swap()
         {
-            //bool[,] universe = new bool[5, 5];
-            //bool[,] scratchPad = new bool[5, 5];
-
+            
             // Swap them...
             CellState[,] temp = universe;
             universe = NextGen;
@@ -85,10 +84,14 @@ namespace KimTerryGameOfLife
         private void Timer_Tick(object sender, EventArgs e)
         {
             NextGeneration();
+            graphicsPanel1.Invalidate();
         }
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
+            
+            //added an int for the count
+            int count;
             //***float change above
             // Calculate the width and height of each cell in pixels
             // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
@@ -126,22 +129,31 @@ namespace KimTerryGameOfLife
                     {
                         e.Graphics.FillRectangle(Brushes.White, cellRect);
                     }
-                    int count = CountNeighborsFinite(x, y, e);
+                    if (world == false)
+                    {
+                        count = CountNeighborsToroidal(x,y);
+                    }
+                    else
+                    {
+                        count = CountNeighborsFinite(x, y);
+                    }
                     //Rectext(CountNeighborsFinite(x, y, e), e, x, y, gridPen, cellBrush);
 
                     if (count > 0)
                     {
-                        test(e, x, y, count);
+                        NeighborDisplay(e, x, y, count);
                     }
                     cellRules(count, x, y);
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
+
                 }
             }
 
             // Cleaning up pens and brushes
             gridPen.Dispose();
             cellBrush.Dispose();
+
         }
 
         private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e)
@@ -194,9 +206,10 @@ namespace KimTerryGameOfLife
                 NextGen[x, y].SetLcells(true);
             }
 
-
         }
-        private void test(PaintEventArgs e, int x, int y, int count)
+
+        //display neighbor count
+        private void NeighborDisplay(PaintEventArgs e, int x, int y, int count)
         {
 
             Pen gridPen = new Pen(gridColor, 1);
@@ -231,43 +244,6 @@ namespace KimTerryGameOfLife
 
             gridPen.Dispose();
             cellBrush.Dispose();
-            graphicsPanel1.Invalidate();
-        }
-        //neighbor count display
-        private void Rectext(int count, PaintEventArgs e, int x, int y, Pen gridpen, Brush cellBrush)
-        {
-            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
-            float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
-            Font font = new Font("Arial", 20f);
-
-            StringFormat stringFormat = new StringFormat();
-            stringFormat.Alignment = StringAlignment.Center;
-            stringFormat.LineAlignment = StringAlignment.Center;
-            RectangleF rect = RectangleF.Empty;
-
-
-            for (int yOffset = -1; yOffset <= 1; yOffset++)
-            {
-                for (int xOffset = -1; xOffset <= 1; xOffset++)
-                {
-                    rect = new RectangleF((x + xOffset) * cellWidth, (y + yOffset) * cellHeight, cellWidth, cellHeight);
-                    if (xOffset != 0 || yOffset != 0)
-                    {
-                        //if (universe[x, y] == true)
-                        {
-                            e.Graphics.FillRectangle(cellBrush, rect);
-                            e.Graphics.DrawRectangle(gridpen, (x + xOffset) * cellWidth, (y + yOffset) * cellHeight, cellWidth, cellHeight);
-                        }
-                        //else
-                        //{
-                        //    e.Graphics.FillRectangle(cellBrush, rect);
-                        //    e.Graphics.DrawRectangle(gridpen, (x + xOffset) * cellWidth, (y + yOffset) * cellHeight, cellWidth, cellHeight);
-                        //}
-                        e.Graphics.DrawString((count).ToString(), font, Brushes.Black, rect, stringFormat);
-                    }
-                }
-            }
-            //graphicsPanel1.Invalidate();
         }
 
         private void IniRandUniverse()
@@ -276,7 +252,7 @@ namespace KimTerryGameOfLife
         }
 
 
-        private int CountNeighborsFinite(int x, int y, PaintEventArgs e)
+        private int CountNeighborsFinite(int x, int y)
         {
 
             int count = 0;
@@ -379,14 +355,60 @@ namespace KimTerryGameOfLife
                 }
 
             }
-
             return count;
 
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            timer.Start();
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void next_Click(object sender, EventArgs e)
         {
             NextGeneration();
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void newToolStripButton_Click(object sender, EventArgs e)
+        {
+            timer.Stop();
+            generations = 0;
+
+            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            setNextGenSize();
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    universe[i, j] = new CellState();
+                    NextGen[i, j] = new CellState();
+                }
+            }
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void pause_Click(object sender, EventArgs e)
+        {
+            timer.Stop();
+
+            //graphicsPanel1.Invalidate();
+        }
+
+        private void finiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            world = true;
+            graphicsPanel1.Invalidate();
+        }
+
+        private void toriToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            world = false;
+            graphicsPanel1.Invalidate();
         }
     }
 }
