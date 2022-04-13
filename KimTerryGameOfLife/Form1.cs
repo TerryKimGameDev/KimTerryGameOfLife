@@ -25,9 +25,10 @@ namespace KimTerryGameOfLife
         // The Timer class
         Timer timer = new Timer();
 
+        Brush tBrush = new SolidBrush(Color.Red);
+
         // Generation count
         int generations = 0;
-
         //set world state for toroidal or finite
         bool world = false;
         //bool for the neighbor count
@@ -142,12 +143,12 @@ namespace KimTerryGameOfLife
                         count = CountNeighborsFinite(x, y);
                     }
                     //Rectext(CountNeighborsFinite(x, y, e), e, x, y, gridPen, cellBrush);
+                    cellRules(count, x, y);
 
                     if (count > 0 && DisplayCount == true)
                     {
                         NeighborDisplay(e, x, y, count);
                     }
-                    cellRules(count, x, y);
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
 
@@ -189,6 +190,7 @@ namespace KimTerryGameOfLife
         //rules for the Cell generation
         private void cellRules(int count, int x, int y)
         {
+            tBrush = new SolidBrush(Color.Red);
             if (count < 2)
             {
                 //NextGen[x, y] = false; //scratchpad death
@@ -203,11 +205,13 @@ namespace KimTerryGameOfLife
             {
                 //NextGen[x, y] = true;
                 NextGen[x, y].SetLcells(true);
+                tBrush = new SolidBrush(Color.Green);
             }
             if (universe[x,y].GetCellState() == false && count == 3)
             {
                 //NextGen[x, y] = true;
                 NextGen[x, y].SetLcells(true);
+                tBrush = new SolidBrush(Color.Green);
             }
 
         }
@@ -215,11 +219,10 @@ namespace KimTerryGameOfLife
         //display neighbor count
         private void NeighborDisplay(PaintEventArgs e, int x, int y, int count)
         {
-
             Pen gridPen = new Pen(gridColor, 1);
 
-            // A Brush for filling living cells interiors (color)
             Brush cellBrush = new SolidBrush(cellColor);
+
             float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
@@ -241,13 +244,15 @@ namespace KimTerryGameOfLife
             {
                 e.Graphics.FillRectangle(Brushes.White, rect);
             }
+            //Brush tBrush = new SolidBrush(cellColor);
+            
             //e.Graphics.FillRectangle(cellBrush, rect);
             e.Graphics.DrawRectangle(gridPen, (x) * cellWidth, (y) * cellHeight, cellWidth, cellHeight);
-            e.Graphics.DrawString((count).ToString(), font, Brushes.Black, rect, stringFormat);
-
+            e.Graphics.DrawString((count).ToString(), font, tBrush, rect, stringFormat);
 
             gridPen.Dispose();
             cellBrush.Dispose();
+            tBrush.Dispose();
         }
 
         private void IniRandUniverse()
@@ -363,6 +368,26 @@ namespace KimTerryGameOfLife
 
         }
 
+        //made for the sake of both the new and randomizer and any other possible thing that may need the grid reset beforehand
+        private void GridReset()
+        {
+            timer.Stop();
+            generations = 0;
+
+            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            setNextGenSize();
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    universe[i, j] = new CellState();
+                    NextGen[i, j] = new CellState();
+                }
+            }
+
+            graphicsPanel1.Invalidate();
+        }
+
 
         //activate timer for the game
         private void toolStripButton2_Click(object sender, EventArgs e)
@@ -382,21 +407,7 @@ namespace KimTerryGameOfLife
         //clear grid/ new game
         private void newToolStripButton_Click(object sender, EventArgs e)
         {
-            timer.Stop();
-            generations = 0;
-
-            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
-            setNextGenSize();
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 5; j++)
-                {
-                    universe[i, j] = new CellState();
-                    NextGen[i, j] = new CellState();
-                }
-            }
-
-            graphicsPanel1.Invalidate();
+            GridReset();
         }
 
         //pause game
@@ -449,6 +460,7 @@ namespace KimTerryGameOfLife
         //creates the random seed //will be updated later
         private void Randomize_Click(object sender, EventArgs e)
         {
+            GridReset();
             Random Rint = new Random();
             for (int i = 0; i < universe.GetLength(0); i++)
             {
@@ -463,6 +475,16 @@ namespace KimTerryGameOfLife
                 }
             }
             graphicsPanel1.Invalidate();
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GridReset();
+        }
+
+        private void Options_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
