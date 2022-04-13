@@ -30,6 +30,10 @@ namespace KimTerryGameOfLife
 
         //set world state for toroidal or finite
         bool world = false;
+        //bool for the neighbor count
+        bool DisplayCount = true;
+        //bool for grid
+        bool grid = true;
         //next generation array
         CellState[,] NextGen; //this is the scratchpad
 
@@ -139,7 +143,7 @@ namespace KimTerryGameOfLife
                     }
                     //Rectext(CountNeighborsFinite(x, y, e), e, x, y, gridPen, cellBrush);
 
-                    if (count > 0)
+                    if (count > 0 && DisplayCount == true)
                     {
                         NeighborDisplay(e, x, y, count);
                     }
@@ -359,13 +363,15 @@ namespace KimTerryGameOfLife
 
         }
 
+
+        //activate timer for the game
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             timer.Start();
 
             graphicsPanel1.Invalidate();
         }
-
+        // click for the new gen
         private void next_Click(object sender, EventArgs e)
         {
             NextGeneration();
@@ -373,6 +379,7 @@ namespace KimTerryGameOfLife
             graphicsPanel1.Invalidate();
         }
 
+        //clear grid/ new game
         private void newToolStripButton_Click(object sender, EventArgs e)
         {
             timer.Stop();
@@ -392,6 +399,7 @@ namespace KimTerryGameOfLife
             graphicsPanel1.Invalidate();
         }
 
+        //pause game
         private void pause_Click(object sender, EventArgs e)
         {
             timer.Stop();
@@ -399,15 +407,61 @@ namespace KimTerryGameOfLife
             //graphicsPanel1.Invalidate();
         }
 
+
+        //finite view
         private void finiteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             world = true;
+            finiteToolStripMenuItem.Checked = true;
+            toriToolStripMenuItem.Checked = false;
             graphicsPanel1.Invalidate();
         }
 
+        //toroidal view
         private void toriToolStripMenuItem_Click(object sender, EventArgs e)
         {
             world = false;
+            toriToolStripMenuItem.Checked = true;
+            finiteToolStripMenuItem.Checked = false;
+            graphicsPanel1.Invalidate();
+        }
+
+        //toggle the neighbor count
+        private void NeighborCount_Click(object sender, EventArgs e)
+        {
+            DisplayCount = !DisplayCount;
+            graphicsPanel1.Invalidate();
+        }
+
+        private void gridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            grid = !grid;
+            gridToolStripMenuItem.Checked = !gridToolStripMenuItem.Checked;
+            if (grid == true)
+            {
+                gridColor = Color.Black;
+            }
+            else gridColor = graphicsPanel1.BackColor;
+            graphicsPanel1.Invalidate();
+        }
+
+
+        //creates the random seed //will be updated later
+        private void Randomize_Click(object sender, EventArgs e)
+        {
+            Random Rint = new Random();
+            for (int i = 0; i < universe.GetLength(0); i++)
+            {
+                for (int j = 0; j < universe.GetLength(1); j++)
+                {
+                    int num = Rint.Next(0, 3);
+                    if (num == 0)
+                    {
+                        universe[i, j].SetLcells(true);
+                    }
+                    else universe[i, j].SetLcells(false);
+                }
+            }
             graphicsPanel1.Invalidate();
         }
     }
