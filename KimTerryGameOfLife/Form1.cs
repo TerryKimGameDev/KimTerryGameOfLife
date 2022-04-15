@@ -15,8 +15,8 @@ namespace KimTerryGameOfLife
     {
 
         // The universe array
-        CellState[,] universe = new CellState[5,5];
-        
+        CellState[,] universe = new CellState[5, 5];
+
 
         // Drawing colors
         Color gridColor = Color.Black;
@@ -35,6 +35,8 @@ namespace KimTerryGameOfLife
         bool DisplayCount = true;
         //bool for grid
         bool grid = true;
+        //bool for hud
+        bool HUD = true;
         //next generation array
         CellState[,] NextGen; //this is the scratchpad
 
@@ -78,7 +80,7 @@ namespace KimTerryGameOfLife
 
         private void swap()
         {
-            
+
             // Swap them...
             CellState[,] temp = universe;
             universe = NextGen;
@@ -94,7 +96,9 @@ namespace KimTerryGameOfLife
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
-            
+            //int for live cell count for the hud
+            int Lcell = 0;
+
             //added an int for the count
             int count;
             //***float change above
@@ -129,6 +133,7 @@ namespace KimTerryGameOfLife
                     if (universe[x, y].GetCellState() == true)
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
+                        Lcell++;
                     }
                     else
                     {
@@ -136,7 +141,7 @@ namespace KimTerryGameOfLife
                     }
                     if (world == false)
                     {
-                        count = CountNeighborsToroidal(x,y);
+                        count = CountNeighborsToroidal(x, y);
                     }
                     else
                     {
@@ -152,7 +157,12 @@ namespace KimTerryGameOfLife
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
 
+
                 }
+            }
+            if (HUD == true)
+            {
+                HUDelements(e, Lcell, generations, world);
             }
 
             // Cleaning up pens and brushes
@@ -201,13 +211,13 @@ namespace KimTerryGameOfLife
                 //NextGen[x, y] = false;
                 NextGen[x, y].SetLcells(false);
             }
-            if (universe[x,y].GetCellState() == true && count == 2 || count == 3)
+            if (universe[x, y].GetCellState() == true && count == 2 || count == 3)
             {
                 //NextGen[x, y] = true;
                 NextGen[x, y].SetLcells(true);
                 tBrush = new SolidBrush(Color.Green);
             }
-            if (universe[x,y].GetCellState() == false && count == 3)
+            if (universe[x, y].GetCellState() == false && count == 3)
             {
                 //NextGen[x, y] = true;
                 NextGen[x, y].SetLcells(true);
@@ -233,7 +243,7 @@ namespace KimTerryGameOfLife
             stringFormat.Alignment = StringAlignment.Center;
             stringFormat.LineAlignment = StringAlignment.Center;
 
-            RectangleF rect = new RectangleF(x*cellWidth, y*cellHeight, cellWidth, cellHeight);
+            RectangleF rect = new RectangleF(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
             //int neighbors = 8;
 
             if (universe[x, y].GetCellState() == true)
@@ -245,7 +255,7 @@ namespace KimTerryGameOfLife
                 e.Graphics.FillRectangle(Brushes.White, rect);
             }
             //Brush tBrush = new SolidBrush(cellColor);
-            
+
             //e.Graphics.FillRectangle(cellBrush, rect);
             e.Graphics.DrawRectangle(gridPen, (x) * cellWidth, (y) * cellHeight, cellWidth, cellHeight);
             e.Graphics.DrawString((count).ToString(), font, tBrush, rect, stringFormat);
@@ -254,13 +264,7 @@ namespace KimTerryGameOfLife
             cellBrush.Dispose();
             tBrush.Dispose();
         }
-
-        private void IniRandUniverse()
-        {
-
-        }
-
-
+        //finite universe
         private int CountNeighborsFinite(int x, int y)
         {
 
@@ -307,7 +311,7 @@ namespace KimTerryGameOfLife
             }
             return count;
         }
-
+        //toroidal universe
         private int CountNeighborsToroidal(int x, int y)
 
         {
@@ -366,6 +370,20 @@ namespace KimTerryGameOfLife
             }
             return count;
 
+        }
+        //The Hud display
+        //need to figure out alignments later
+        private void HUDelements(PaintEventArgs e, int count, int generations, bool World)
+        {
+            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
+            // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
+            float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
+            Font font = new Font("Arial", 12f);
+            string s = (world == false) ? "Toroidal" : "Finite";
+
+            RectangleF rect = new RectangleF(0, 0, graphicsPanel1.ClientSize.Width, graphicsPanel1.ClientSize.Height);
+            string Hudtext = $"Generations: {generations}\nCell Count: {count}\nBoundary Type:{s}\nUniverse Size:(Width={universe.GetLength(0)}, Height={universe.GetLength(1)})";
+            e.Graphics.DrawString(Hudtext, font, Brushes.Salmon, rect);
         }
 
         //made for the sake of both the new and randomizer and any other possible thing that may need the grid reset beforehand
@@ -486,5 +504,13 @@ namespace KimTerryGameOfLife
         {
 
         }
-    }
+
+        private void hUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HUD = !HUD;
+            hUDToolStripMenuItem.Checked = !hUDToolStripMenuItem.Checked;
+            graphicsPanel1.Invalidate();
+        }
+
+    } 
 }
