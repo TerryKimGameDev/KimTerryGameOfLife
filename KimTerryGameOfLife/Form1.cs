@@ -17,7 +17,7 @@ namespace KimTerryGameOfLife
     {
 
         // The universe array
-        CellState[,] universe = new CellState[10, 10];
+        CellState[,] universe = new CellState[30, 30];
 
 
         // Drawing colors
@@ -140,7 +140,7 @@ namespace KimTerryGameOfLife
                     cellRect.Y = y * cellHeight;
                     cellRect.Width = cellWidth;
                     cellRect.Height = cellHeight;
-
+                    
                     // Fill the cell with a brush if alive
                     if (universe[x, y].GetCellState() == true)
                     {
@@ -168,10 +168,9 @@ namespace KimTerryGameOfLife
                     }
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
-
-
                 }
             }
+            Grid10by10(e);
             if (HUD == true)
             {
                 HUDelements(e, Lcell, generations, world);
@@ -207,6 +206,32 @@ namespace KimTerryGameOfLife
                 graphicsPanel1.Invalidate();
             }
         }
+        private void Grid10by10(PaintEventArgs e)
+        {
+            // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
+            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
+            // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
+            float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                // Iterate through the universe in the x, left to right
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    // A rectangle to represent each cell in pixels
+                    //***changed to rectF
+                    RectangleF cellRect = Rectangle.Empty;
+                    cellRect.X = x * cellWidth;
+                    cellRect.Y = y * cellHeight;
+                    cellRect.Width = cellWidth;
+                    cellRect.Height = cellHeight;
+
+                    if(x %10 == 0 && y %10 == 0)
+                    {
+                        e.Graphics.DrawRectangle(new Pen(Brushes.Red, 2), cellRect.X, cellRect.Y, cellRect.Width*10, cellRect.Height*10);
+                    }
+                }
+            }
+        }
 
 
         //rules for the Cell generation
@@ -229,6 +254,7 @@ namespace KimTerryGameOfLife
                 NextGen[x, y].SetLcells(true);
                 tBrush = new SolidBrush(Color.Green);
             }
+            else NextGen[x, y].SetLcells(false);
 
             if (universe[x, y].GetCellState() == false && count == 3)
             {
@@ -402,26 +428,8 @@ namespace KimTerryGameOfLife
         }
 
         //made for the sake of both the new and randomizer and any other possible thing that may need the grid reset beforehand
-        private void GridReset()
-        {
-            timer.Stop();
-            generations = 0;
 
-            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
-            setNextGenSize();
-            for (int i = 0; i < universe.GetLength(0); i++)
-            {
-                for (int j = 0; j < universe.GetLength(1); j++)
-                {
-                    universe[i, j] = new CellState();
-                    NextGen[i, j] = new CellState();
-                }
-            }
-
-            graphicsPanel1.Invalidate();
-        }
-
-
+        //all Buttons
         //activate timer for the game
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
@@ -479,14 +487,7 @@ namespace KimTerryGameOfLife
 
         private void gridToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            grid = !grid;
-            gridToolStripMenuItem.Checked = !gridToolStripMenuItem.Checked;
-            if (grid == true)
-            {
-                gridColor = Color.Black;
-            }
-            else gridColor = Color.Empty;
-            graphicsPanel1.Invalidate();
+            GridControl();
         }
 
 
@@ -522,10 +523,62 @@ namespace KimTerryGameOfLife
 
         private void hUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            HUD = !HUD;
-            hUDToolStripMenuItem.Checked = !hUDToolStripMenuItem.Checked;
-            graphicsPanel1.Invalidate();
+            hudControl();
         }
 
+
+        private void hudToolStripMenuItem1_Click_1(object sender, EventArgs e)
+        {
+            hudControl();
+        }
+
+        private void gridToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            GridControl();
+        }
+
+        //control Groups
+        #region Control
+        //grid control
+        private void GridControl()
+        {
+            grid = !grid;
+            gridToolStripMenuItem.Checked = grid;
+            gridToolStripMenuItem1.Checked = grid;
+            if (grid == true)
+            {
+                gridColor = Color.Black;
+            }
+            else gridColor = Color.Empty;
+            graphicsPanel1.Invalidate();
+        }
+        //hud control
+        private void hudControl()
+        {
+            HUD = !HUD;
+            hUDToolStripMenuItem.Checked = HUD;
+            hudToolStripMenuItem1.Checked = HUD;
+            graphicsPanel1.Invalidate();
+        }
+        //Grid reset control // for newing the grid
+        private void GridReset()
+        {
+            timer.Stop();
+            generations = 0;
+
+            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            setNextGenSize();
+            for (int i = 0; i < universe.GetLength(0); i++)
+            {
+                for (int j = 0; j < universe.GetLength(1); j++)
+                {
+                    universe[i, j] = new CellState();
+                    NextGen[i, j] = new CellState();
+                }
+            }
+
+            graphicsPanel1.Invalidate();
+        } 
+        #endregion
     } 
 }

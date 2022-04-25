@@ -29,6 +29,7 @@ namespace KimTerryGameOfLife
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,10 +68,17 @@ namespace KimTerryGameOfLife
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelGenerations = new System.Windows.Forms.ToolStripStatusLabel();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.colorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.hudToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.gridToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.countneighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.graphicsPanel1 = new KimTerryGameOfLife.GraphicsPanel();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -383,6 +391,54 @@ namespace KimTerryGameOfLife
             this.toolStripStatusLabelGenerations.Size = new System.Drawing.Size(90, 17);
             this.toolStripStatusLabelGenerations.Text = "Generations = 0";
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.colorToolStripMenuItem,
+            this.viewToolStripMenuItem1});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
+            // 
+            // colorToolStripMenuItem
+            // 
+            this.colorToolStripMenuItem.Name = "colorToolStripMenuItem";
+            this.colorToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.colorToolStripMenuItem.Text = "Color";
+            // 
+            // viewToolStripMenuItem1
+            // 
+            this.viewToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hudToolStripMenuItem1,
+            this.gridToolStripMenuItem1,
+            this.countneighborToolStripMenuItem});
+            this.viewToolStripMenuItem1.Name = "viewToolStripMenuItem1";
+            this.viewToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.viewToolStripMenuItem1.Text = "View";
+            // 
+            // hudToolStripMenuItem1
+            // 
+            this.hudToolStripMenuItem1.Checked = true;
+            this.hudToolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.hudToolStripMenuItem1.Name = "hudToolStripMenuItem1";
+            this.hudToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.hudToolStripMenuItem1.Text = "Hud";
+            this.hudToolStripMenuItem1.Click += new System.EventHandler(this.hudToolStripMenuItem1_Click_1);
+            // 
+            // gridToolStripMenuItem1
+            // 
+            this.gridToolStripMenuItem1.Checked = true;
+            this.gridToolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gridToolStripMenuItem1.Name = "gridToolStripMenuItem1";
+            this.gridToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.gridToolStripMenuItem1.Text = "Grid";
+            this.gridToolStripMenuItem1.Click += new System.EventHandler(this.gridToolStripMenuItem1_Click);
+            // 
+            // countneighborToolStripMenuItem
+            // 
+            this.countneighborToolStripMenuItem.Name = "countneighborToolStripMenuItem";
+            this.countneighborToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.countneighborToolStripMenuItem.Text = "Countneighbor";
+            // 
             // graphicsPanel1
             // 
             this.graphicsPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -390,6 +446,7 @@ namespace KimTerryGameOfLife
             | System.Windows.Forms.AnchorStyles.Right)));
             this.graphicsPanel1.AutoSize = true;
             this.graphicsPanel1.BackColor = System.Drawing.SystemColors.Window;
+            this.graphicsPanel1.ContextMenuStrip = this.contextMenuStrip1;
             this.graphicsPanel1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.graphicsPanel1.Location = new System.Drawing.Point(0, 49);
             this.graphicsPanel1.Name = "graphicsPanel1";
@@ -416,6 +473,7 @@ namespace KimTerryGameOfLife
             this.toolStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -461,6 +519,12 @@ namespace KimTerryGameOfLife
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem Options;
         private System.Windows.Forms.ToolStripMenuItem hUDToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem colorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem hudToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem gridToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem countneighborToolStripMenuItem;
     }
 }
 
