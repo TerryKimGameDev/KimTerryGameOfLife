@@ -9,18 +9,22 @@ using System.Threading.Tasks;
 using Cells;
 using System.Windows.Forms;
 
+//github
+//https://github.com/TerryKimGameDev/KimTerryGameOfLife
 namespace KimTerryGameOfLife
 {
     public partial class Form1 : Form
     {
 
         // The universe array
-        CellState[,] universe = new CellState[5, 5];
+        CellState[,] universe = new CellState[10, 10];
 
 
         // Drawing colors
         Color gridColor = Color.Black;
         Color cellColor = Color.Gray;
+
+        Color defaultColor = Color.White;
 
         // The Timer class
         Timer timer = new Timer();
@@ -54,19 +58,25 @@ namespace KimTerryGameOfLife
             // Setup the timer
             timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
+            arrayInit();
+            //***made change so timer does not automatically run***
+            //timer.Enabled = true; // start timer running
 
-            for (int i = 0; i < 5; i++)
+        }
+        private void arrayInit()
+        {
+
+            for (int i = 0; i < universe.GetLength(0); i++)
             {
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < universe.GetLength(1); j++)
                 {
                     universe[i, j] = new CellState();
                     NextGen[i, j] = new CellState();
                 }
             }
-            //***made change so timer does not automatically run***
-            //timer.Enabled = true; // start timer running
-
         }
+
+
 
         // Calculate the next generation of cells
         private void NextGeneration()
@@ -114,6 +124,8 @@ namespace KimTerryGameOfLife
 
             // A Brush for filling living cells interiors (color)
             Brush cellBrush = new SolidBrush(cellColor);
+            //default cell colors
+            Brush Dbrush = new SolidBrush(defaultColor);
 
             // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
@@ -137,8 +149,9 @@ namespace KimTerryGameOfLife
                     }
                     else
                     {
-                        e.Graphics.FillRectangle(Brushes.White, cellRect);
+                        e.Graphics.FillRectangle(Dbrush, cellRect); ;
                     }
+
                     if (world == false)
                     {
                         count = CountNeighborsToroidal(x, y);
@@ -147,7 +160,6 @@ namespace KimTerryGameOfLife
                     {
                         count = CountNeighborsFinite(x, y);
                     }
-                    //Rectext(CountNeighborsFinite(x, y, e), e, x, y, gridPen, cellBrush);
                     cellRules(count, x, y);
 
                     if (count > 0 && DisplayCount == true)
@@ -217,12 +229,14 @@ namespace KimTerryGameOfLife
                 NextGen[x, y].SetLcells(true);
                 tBrush = new SolidBrush(Color.Green);
             }
+
             if (universe[x, y].GetCellState() == false && count == 3)
             {
                 //NextGen[x, y] = true;
                 NextGen[x, y].SetLcells(true);
                 tBrush = new SolidBrush(Color.Green);
             }
+            
 
         }
 
@@ -233,15 +247,15 @@ namespace KimTerryGameOfLife
 
             Brush cellBrush = new SolidBrush(cellColor);
 
+            Brush DBrush = new SolidBrush(defaultColor);
             float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
 
             Font font = new Font("Arial", 20f);
-
             StringFormat stringFormat = new StringFormat();
             stringFormat.Alignment = StringAlignment.Center;
-            stringFormat.LineAlignment = StringAlignment.Center;
+
 
             RectangleF rect = new RectangleF(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
             //int neighbors = 8;
@@ -252,7 +266,7 @@ namespace KimTerryGameOfLife
             }
             else
             {
-                e.Graphics.FillRectangle(Brushes.White, rect);
+                e.Graphics.FillRectangle(DBrush, rect);
             }
             //Brush tBrush = new SolidBrush(cellColor);
 
@@ -378,12 +392,13 @@ namespace KimTerryGameOfLife
             float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
-            Font font = new Font("Arial", 12f);
+            Font font = new Font("Arial", 12f, FontStyle.Bold);
             string s = (world == false) ? "Toroidal" : "Finite";
-
-            RectangleF rect = new RectangleF(0, 0, graphicsPanel1.ClientSize.Width, graphicsPanel1.ClientSize.Height);
             string Hudtext = $"Generations: {generations}\nCell Count: {count}\nBoundary Type:{s}\nUniverse Size:(Width={universe.GetLength(0)}, Height={universe.GetLength(1)})";
-            e.Graphics.DrawString(Hudtext, font, Brushes.Salmon, rect);
+            RectangleF rect = new RectangleF(0, 0, graphicsPanel1.ClientSize.Width, graphicsPanel1.ClientSize.Height);
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.LineAlignment = StringAlignment.Far;
+            e.Graphics.DrawString(Hudtext, font, Brushes.Salmon, rect, stringFormat);
         }
 
         //made for the sake of both the new and randomizer and any other possible thing that may need the grid reset beforehand
@@ -394,9 +409,9 @@ namespace KimTerryGameOfLife
 
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
             setNextGenSize();
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < universe.GetLength(0); i++)
             {
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < universe.GetLength(1); j++)
                 {
                     universe[i, j] = new CellState();
                     NextGen[i, j] = new CellState();
@@ -479,7 +494,7 @@ namespace KimTerryGameOfLife
         private void Randomize_Click(object sender, EventArgs e)
         {
             GridReset();
-            Random Rint = new Random();
+            Random Rint = new Random(DateTime.Now.Millisecond);
             for (int i = 0; i < universe.GetLength(0); i++)
             {
                 for (int j = 0; j < universe.GetLength(1); j++)
