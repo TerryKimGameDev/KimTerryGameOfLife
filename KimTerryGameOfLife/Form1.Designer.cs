@@ -397,13 +397,14 @@ namespace KimTerryGameOfLife
             this.colorToolStripMenuItem,
             this.viewToolStripMenuItem1});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(104, 48);
             // 
             // colorToolStripMenuItem
             // 
             this.colorToolStripMenuItem.Name = "colorToolStripMenuItem";
             this.colorToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.colorToolStripMenuItem.Text = "Color";
+            this.colorToolStripMenuItem.Click += new System.EventHandler(this.colorToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem1
             // 
@@ -412,7 +413,7 @@ namespace KimTerryGameOfLife
             this.gridToolStripMenuItem1,
             this.countneighborToolStripMenuItem});
             this.viewToolStripMenuItem1.Name = "viewToolStripMenuItem1";
-            this.viewToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.viewToolStripMenuItem1.Size = new System.Drawing.Size(103, 22);
             this.viewToolStripMenuItem1.Text = "View";
             // 
             // hudToolStripMenuItem1
@@ -420,7 +421,7 @@ namespace KimTerryGameOfLife
             this.hudToolStripMenuItem1.Checked = true;
             this.hudToolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.hudToolStripMenuItem1.Name = "hudToolStripMenuItem1";
-            this.hudToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.hudToolStripMenuItem1.Size = new System.Drawing.Size(155, 22);
             this.hudToolStripMenuItem1.Text = "Hud";
             this.hudToolStripMenuItem1.Click += new System.EventHandler(this.hudToolStripMenuItem1_Click_1);
             // 
@@ -429,14 +430,14 @@ namespace KimTerryGameOfLife
             this.gridToolStripMenuItem1.Checked = true;
             this.gridToolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.gridToolStripMenuItem1.Name = "gridToolStripMenuItem1";
-            this.gridToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.gridToolStripMenuItem1.Size = new System.Drawing.Size(155, 22);
             this.gridToolStripMenuItem1.Text = "Grid";
             this.gridToolStripMenuItem1.Click += new System.EventHandler(this.gridToolStripMenuItem1_Click);
             // 
             // countneighborToolStripMenuItem
             // 
             this.countneighborToolStripMenuItem.Name = "countneighborToolStripMenuItem";
-            this.countneighborToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.countneighborToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.countneighborToolStripMenuItem.Text = "Countneighbor";
             // 
             // graphicsPanel1
@@ -466,7 +467,9 @@ namespace KimTerryGameOfLife
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Terry Kim\'s Game of Life";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);

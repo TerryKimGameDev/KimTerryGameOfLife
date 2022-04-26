@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cells;
 using System.Windows.Forms;
+using System.Drawing.Drawing2D;
 
 //github
 //https://github.com/TerryKimGameDev/KimTerryGameOfLife
@@ -17,14 +18,20 @@ namespace KimTerryGameOfLife
     {
 
         // The universe array
-        CellState[,] universe = new CellState[30, 30];
+        CellState[,] universe = new CellState[20, 20];
 
 
         // Drawing colors
-        Color gridColor = Color.Black;
+        Color gridColor = Form1.DefaultForeColor;
+        Color grid10Color = Color.Black;
         Color cellColor = Color.Gray;
+        //for background
+        Color BackgroundColor = Form1.DefaultBackColor;
 
-        Color defaultColor = Color.White;
+        //for default grid color
+        Color dgrid = Color.Black;
+        Color dgrid10 = Color.Black;
+
 
         // The Timer class
         Timer timer = new Timer();
@@ -43,6 +50,8 @@ namespace KimTerryGameOfLife
         bool HUD = true;
         //next generation array
         CellState[,] NextGen; //this is the scratchpad
+
+        public Color MyProperty { get; set; }
 
         //Set the next gen array size to the univer size 
         private void setNextGenSize()
@@ -125,7 +134,7 @@ namespace KimTerryGameOfLife
             // A Brush for filling living cells interiors (color)
             Brush cellBrush = new SolidBrush(cellColor);
             //default cell colors
-            Brush Dbrush = new SolidBrush(defaultColor);
+            Brush Dbrush = new SolidBrush(BackgroundColor);
 
             // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
@@ -170,6 +179,7 @@ namespace KimTerryGameOfLife
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
                 }
             }
+            // 10 by 10 grid display
             Grid10by10(e);
             if (HUD == true)
             {
@@ -206,6 +216,7 @@ namespace KimTerryGameOfLife
                 graphicsPanel1.Invalidate();
             }
         }
+        //the 10 by 10 grid display
         private void Grid10by10(PaintEventArgs e)
         {
             // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
@@ -214,20 +225,17 @@ namespace KimTerryGameOfLife
             float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
             for (int y = 0; y < universe.GetLength(1); y++)
             {
-                // Iterate through the universe in the x, left to right
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
                     // A rectangle to represent each cell in pixels
-                    //***changed to rectF
                     RectangleF cellRect = Rectangle.Empty;
                     cellRect.X = x * cellWidth;
                     cellRect.Y = y * cellHeight;
-                    cellRect.Width = cellWidth;
-                    cellRect.Height = cellHeight;
 
                     if(x %10 == 0 && y %10 == 0)
                     {
-                        e.Graphics.DrawRectangle(new Pen(Brushes.Red, 2), cellRect.X, cellRect.Y, cellRect.Width*10, cellRect.Height*10);
+                        //draw the 10 by 10 grid based on modulo of 10
+                        e.Graphics.DrawRectangle(new Pen(grid10Color, 2), cellRect.X, cellRect.Y, cellWidth*10, cellHeight*10);
                     }
                 }
             }
@@ -273,14 +281,15 @@ namespace KimTerryGameOfLife
 
             Brush cellBrush = new SolidBrush(cellColor);
 
-            Brush DBrush = new SolidBrush(defaultColor);
+            Brush DBrush = new SolidBrush(BackgroundColor);
             float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
 
-            Font font = new Font("Arial", 20f);
+            Font font = new Font("Arial", cellHeight*0.7f);
             StringFormat stringFormat = new StringFormat();
             stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.LineAlignment = StringAlignment.Center;
 
 
             RectangleF rect = new RectangleF(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
@@ -414,10 +423,7 @@ namespace KimTerryGameOfLife
         //The Hud display
         //need to figure out alignments later
         private void HUDelements(PaintEventArgs e, int count, int generations, bool World)
-        {
-            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
-            // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
-            float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
+        { 
             Font font = new Font("Arial", 12f, FontStyle.Bold);
             string s = (world == false) ? "Toroidal" : "Finite";
             string Hudtext = $"Generations: {generations}\nCell Count: {count}\nBoundary Type:{s}\nUniverse Size:(Width={universe.GetLength(0)}, Height={universe.GetLength(1)})";
@@ -518,7 +524,12 @@ namespace KimTerryGameOfLife
 
         private void Options_Click(object sender, EventArgs e)
         {
+            Options_Dialog opdlg = new Options_Dialog();
+            
+            if(opdlg.DialogResult == DialogResult.OK)
+            {
 
+            }
         }
 
         private void hUDToolStripMenuItem_Click(object sender, EventArgs e)
@@ -547,9 +558,14 @@ namespace KimTerryGameOfLife
             gridToolStripMenuItem1.Checked = grid;
             if (grid == true)
             {
-                gridColor = Color.Black;
+                gridColor = dgrid;
+                grid10Color = dgrid10;
             }
-            else gridColor = Color.Empty;
+            else
+            {
+                gridColor = Color.Empty;
+                grid10Color = Color.Empty;
+            }
             graphicsPanel1.Invalidate();
         }
         //hud control
@@ -578,7 +594,62 @@ namespace KimTerryGameOfLife
             }
 
             graphicsPanel1.Invalidate();
-        } 
+        }
+        private Color CdialogControl(Color clr)
+        {
+            ColorDialog Cdlg = new ColorDialog();
+            Cdlg.Color = clr;
+            if (DialogResult.OK == Cdlg.ShowDialog() )
+            {
+                clr = Cdlg.Color;
+            }
+            return clr;
+        }
         #endregion
+
+        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BackgroundColor = CdialogControl(BackgroundColor);
+            graphicsPanel1.Invalidate();
+        }
+
+        private void saveRestor3(PaintEventArgs e)
+        {
+            // Translate transformation matrix.
+            e.Graphics.TranslateTransform(100, 0);
+
+            // Save translated graphics state.
+            GraphicsState transState = e.Graphics.Save();
+
+            // Reset transformation matrix to identity and fill rectangle.
+            e.Graphics.ResetTransform();
+            e.Graphics.FillRectangle(new SolidBrush(Color.Red), 0, 0, 100, 100);
+
+            // Restore graphics state to translated state and fill second
+
+            // rectangle.
+            e.Graphics.Restore(transState);
+            e.Graphics.FillRectangle(new SolidBrush(Color.Blue), 0, 0, 100, 100);
+        }
+
+        //Load in user settings on open
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            cellColor = KimTerryGameOfLife.Properties.Settings.Default.CellColor;
+            gridColor = KimTerryGameOfLife.Properties.Settings.Default.GridColor;
+            grid10Color = KimTerryGameOfLife.Properties.Settings.Default.Grid10Color;
+            BackgroundColor = KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor;
+
+        }
+        //Save user settings on close
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            KimTerryGameOfLife.Properties.Settings.Default.CellColor = cellColor;
+            KimTerryGameOfLife.Properties.Settings.Default.GridColor = gridColor;
+            KimTerryGameOfLife.Properties.Settings.Default.Grid10Color = grid10Color;
+            KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor = BackgroundColor;
+            KimTerryGameOfLife.Properties.Settings.Default.Save();
+
+        }
     } 
 }
