@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Cells;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.IO;
 
 //github
 //https://github.com/TerryKimGameDev/KimTerryGameOfLife
@@ -214,7 +215,7 @@ namespace KimTerryGameOfLife
                 graphicsPanel1.Invalidate();
             }
         }
-        
+
         //the 10 by 10 grid display
         private void Grid10by10(PaintEventArgs e)
         {
@@ -413,7 +414,7 @@ namespace KimTerryGameOfLife
 
             //draw the hud
             e.Graphics.DrawString(Hudtext, font, Brushes.Salmon, rect, stringFormat);
-        } 
+        }
         #endregion All Displays
 
         //all Buttons
@@ -536,13 +537,13 @@ namespace KimTerryGameOfLife
             GridReset();
         }
 
-        
+
         //open up the random dialogue when clicked
         private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //randomizer dialog box
             Seed_Randomizer RanDLg = new Seed_Randomizer();
-            
+
             if (DialogResult.OK == RanDLg.ShowDialog())
             {
                 //clear grid
@@ -576,7 +577,7 @@ namespace KimTerryGameOfLife
 
             //store seed
             int seed = Properties.Settings.Default.Seed;
-            
+
             //seed random
             Random Rint = new Random(seed);
 
@@ -717,10 +718,10 @@ namespace KimTerryGameOfLife
             grid10Color = KimTerryGameOfLife.Properties.Settings.Default.Grid10Color;
             BackgroundColor = KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor;
             timer.Interval = Properties.Settings.Default.Interval;
-            Interval.Text = "Interval = "+ timer.Interval.ToString();
+            Interval.Text = "Interval = " + timer.Interval.ToString();
             SeedStatus.Text = Properties.Settings.Default.Seed.ToString();
             GridReset();
-            
+
         }
 
         //reload the user settings
@@ -864,7 +865,7 @@ namespace KimTerryGameOfLife
         {
             ColorDialog Cdlg = new ColorDialog();
             Cdlg.Color = clr;
-            if (DialogResult.OK == Cdlg.ShowDialog() )
+            if (DialogResult.OK == Cdlg.ShowDialog())
             {
                 clr = Cdlg.Color;
             }
@@ -907,8 +908,145 @@ namespace KimTerryGameOfLife
         }
 
 
+
         #endregion User Settings
 
+        //save as
+        private void saveToolStripButton_Click(object sender, EventArgs e)
+        {
+            //save dialogue and setup
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "All Files|*.*|Cells|*.cells";
+            dlg.FilterIndex = 2; dlg.DefaultExt = "cells";
 
+            //show the save dialogue
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                StreamWriter writer = new StreamWriter(dlg.FileName);
+
+                // Write any comments you want to include first.
+                // Prefix all comment strings with an exclamation point.
+                // Use WriteLine to write the strings to the file. 
+                // It appends a CRLF for you.
+                writer.WriteLine("!" + DateTime.Now + "\n");
+
+                // Iterate through the universe one row at a time.
+                for (int y = 0; y < universe.GetLength(1); y++)
+                {
+                    // Create a string to represent the current row.
+                    String currentRow = string.Empty;
+
+                    // Iterate through the current row one cell at a time.
+                    for (int x = 0; x < universe.GetLength(0); x++)
+                    {
+                        // If the universe[x,y] is alive then append 'O' (capital O)
+                        // to the row string.
+                        if (universe[x,y].GetCellState() == true)
+                        {
+                            currentRow += 'O';
+                        }
+                        // Else if the universe[x,y] is dead then append '.' (period)
+                        // to the row string.
+                        else
+                        {
+                            currentRow += '.';
+                        }
+                    }
+
+                    // Once the current row has been read through and the 
+                    // string constructed then write it to the file using WriteLine.
+                    writer.WriteLine(currentRow);
+                }
+
+                // After all rows and columns have been written then close the file.
+                writer.Close();
+            }
+        }
+
+        //open txt
+        private void openToolStripButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "All Files|*.*|Cells|*.cells";
+            dlg.FilterIndex = 2;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                StreamReader reader = new StreamReader(dlg.FileName);
+
+                // Create a couple variables to calculate the width and height
+                // of the data in the file.
+                int maxWidth = 0;
+                int maxHeight = 0;
+
+                // Iterate through the file once to get its size.
+                while (!reader.EndOfStream)
+                {
+                    // Read one row at a time.
+                    string row = reader.ReadLine();
+
+                    // If the row begins with '!' then it is a comment
+                    // and should be ignored.
+                    // If the row is not a comment then it is a row of cells.
+                    // Increment the maxHeight variable for each row read.
+                    if (!row.StartsWith("!") && !string.IsNullOrEmpty(row))
+                    {
+                        maxHeight++;
+                    }
+                    // Get the length of the current row string
+                    // and adjust the maxWidth variable if necessary.
+                    maxWidth = row.Length;
+                }
+
+                // Resize the current universe and scratchPad
+                // to the width and height of the file calculated above.
+                universe = new CellState[maxWidth, maxHeight];
+                setNextGenSize();
+                arrayInit();
+
+
+                // Reset the file pointer back to the beginning of the file.
+                reader.BaseStream.Seek(0, SeekOrigin.Begin);
+
+
+                //yposition of universe
+                int y = 0;
+
+                // Iterate through the file again, this time reading in the cells.
+                while (!reader.EndOfStream)
+                {
+                    // Read one row at a time.
+                    string row = reader.ReadLine();
+
+
+                    // If the row begins with '!' then
+                    // it is a comment and should be ignored.
+                    // If the row is not a comment then 
+                    // it is a row of cells and needs to be iterated through.
+                    if (!row.StartsWith("!") && !string.IsNullOrEmpty(row))
+                    {
+                        for (int xPos = 0; xPos < row.Length; xPos++)
+                        {
+                            // If row[xPos] is a 'O' (capital O) then
+                            // set the corresponding cell in the universe to alive.
+                            if (row[xPos] == 'O')
+                            {
+                                universe[xPos, y].SetLcells(true);
+                            }
+                            // If row[xPos] is a '.' (period) then
+                            // set the corresponding cell in the universe to dead.
+                            else
+                            {
+                                universe[xPos, y].SetLcells(false);
+                            }
+                        }
+                        y++;
+                    }
+                }
+                graphicsPanel1.Invalidate();
+                // Close the file.
+                reader.Close();
+            }
+        }
     }
 }
