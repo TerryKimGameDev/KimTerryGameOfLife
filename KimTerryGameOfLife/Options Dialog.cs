@@ -15,7 +15,19 @@ namespace KimTerryGameOfLife
         public Options_Dialog()
         {
             InitializeComponent();
+            //what values the numericup downs should display on opening //ps the max and mins were already set in properties
+            TimeInterval.Value = Properties.Settings.Default.Interval;
+            UniWidth.Value = Properties.Settings.Default.UniWidth;
+            UniHeight.Value = Properties.Settings.Default.UniHeight;
         }
 
+        //clicking ok button saves to defaults
+        private void ButtonOK_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Interval = (int)TimeInterval.Value;
+            Properties.Settings.Default.UniWidth = (uint)UniWidth.Value;
+            Properties.Settings.Default.UniHeight = (uint)UniHeight.Value;
+            Properties.Settings.Default.Save();
+        }
     }
 }

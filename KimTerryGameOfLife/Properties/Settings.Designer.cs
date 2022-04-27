@@ -110,9 +110,9 @@ namespace KimTerryGameOfLife.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public uint Interval {
+        public int Interval {
             get {
-                return ((uint)(this["Interval"]));
+                return ((int)(this["Interval"]));
             }
             set {
                 this["Interval"] = value;

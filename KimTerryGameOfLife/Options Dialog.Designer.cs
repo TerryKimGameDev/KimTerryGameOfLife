@@ -44,13 +44,14 @@ namespace KimTerryGameOfLife
             // 
             // ButtonOK
             // 
-            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.Yes;
+            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ButtonOK.Location = new System.Drawing.Point(107, 212);
             this.ButtonOK.Name = "ButtonOK";
             this.ButtonOK.Size = new System.Drawing.Size(75, 23);
             this.ButtonOK.TabIndex = 0;
             this.ButtonOK.Text = "OK";
             this.ButtonOK.UseVisualStyleBackColor = true;
+            this.ButtonOK.Click += new System.EventHandler(this.ButtonOK_Click);
             // 
             // ButtonCancel
             // 

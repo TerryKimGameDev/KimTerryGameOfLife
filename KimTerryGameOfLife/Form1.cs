@@ -12,11 +12,13 @@ using System.Drawing.Drawing2D;
 
 //github
 //https://github.com/TerryKimGameDev/KimTerryGameOfLife
+//Most bits of code are organized in regions open them to look at code
 namespace KimTerryGameOfLife
 {
     public partial class Form1 : Form
     {
-
+        //all member fields
+        #region All member Fields
         // The universe array
         CellState[,] universe = new CellState[20, 20];
 
@@ -40,6 +42,7 @@ namespace KimTerryGameOfLife
 
         // Generation count
         int generations = 0;
+        int interval = Properties.Settings.Default.Interval;
         //set world state for toroidal or finite
         bool world = false;
         //bool for the neighbor count
@@ -49,11 +52,10 @@ namespace KimTerryGameOfLife
         //bool for hud
         bool HUD = true;
         //next generation array
-        CellState[,] NextGen; //this is the scratchpad
+        CellState[,] NextGen; //this is the scratchpad 
+        #endregion
 
-        public Color MyProperty { get; set; }
-
-        //Set the next gen array size to the univer size 
+        //Set the next gen array size to the univere size 
         private void setNextGenSize()
         {
             NextGen = new CellState[universe.GetLength(0), universe.GetLength(1)];
@@ -63,11 +65,16 @@ namespace KimTerryGameOfLife
         public Form1()
         {
             InitializeComponent();
+            
+            //setup for the universe size and initialization of the scratchpad and universe
+            universe = new CellState[Properties.Settings.Default.UniWidth, Properties.Settings.Default.UniHeight];
             setNextGenSize();
-            // Setup the timer
-            timer.Interval = 100; // milliseconds
-            timer.Tick += Timer_Tick;
             arrayInit();
+
+            // Setup the timer
+            timer.Interval = interval; // milliseconds
+            timer.Tick += Timer_Tick;
+
             //***made change so timer does not automatically run***
             //timer.Enabled = true; // start timer running
 
@@ -94,6 +101,7 @@ namespace KimTerryGameOfLife
             generations++;
             // Update status strip generations
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+
             swap();
         }
 
@@ -112,7 +120,8 @@ namespace KimTerryGameOfLife
             NextGeneration();
             graphicsPanel1.Invalidate();
         }
-
+        //graphics panel funtionality
+        #region All Display/ graphics panel funcionality
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
             //int for live cell count for the hud
@@ -149,7 +158,7 @@ namespace KimTerryGameOfLife
                     cellRect.Y = y * cellHeight;
                     cellRect.Width = cellWidth;
                     cellRect.Height = cellHeight;
-                    
+
                     // Fill the cell with a brush if alive
                     if (universe[x, y].GetCellState() == true)
                     {
@@ -232,10 +241,10 @@ namespace KimTerryGameOfLife
                     cellRect.X = x * cellWidth;
                     cellRect.Y = y * cellHeight;
 
-                    if(x %10 == 0 && y %10 == 0)
+                    if (x % 10 == 0 && y % 10 == 0)
                     {
                         //draw the 10 by 10 grid based on modulo of 10
-                        e.Graphics.DrawRectangle(new Pen(grid10Color, 2), cellRect.X, cellRect.Y, cellWidth*10, cellHeight*10);
+                        e.Graphics.DrawRectangle(new Pen(grid10Color, 2), cellRect.X, cellRect.Y, cellWidth * 10, cellHeight * 10);
                     }
                 }
             }
@@ -270,7 +279,7 @@ namespace KimTerryGameOfLife
                 NextGen[x, y].SetLcells(true);
                 tBrush = new SolidBrush(Color.Green);
             }
-            
+
 
         }
 
@@ -286,7 +295,7 @@ namespace KimTerryGameOfLife
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
 
-            Font font = new Font("Arial", cellHeight*0.7f);
+            Font font = new Font("Arial", cellHeight * 0.7f);
             StringFormat stringFormat = new StringFormat();
             stringFormat.Alignment = StringAlignment.Center;
             stringFormat.LineAlignment = StringAlignment.Center;
@@ -421,9 +430,8 @@ namespace KimTerryGameOfLife
 
         }
         //The Hud display
-        //need to figure out alignments later
         private void HUDelements(PaintEventArgs e, int count, int generations, bool World)
-        { 
+        {
             Font font = new Font("Arial", 12f, FontStyle.Bold);
             string s = (world == false) ? "Toroidal" : "Finite";
             string Hudtext = $"Generations: {generations}\nCell Count: {count}\nBoundary Type:{s}\nUniverse Size:(Width={universe.GetLength(0)}, Height={universe.GetLength(1)})";
@@ -431,23 +439,24 @@ namespace KimTerryGameOfLife
             StringFormat stringFormat = new StringFormat();
             stringFormat.LineAlignment = StringAlignment.Far;
             e.Graphics.DrawString(Hudtext, font, Brushes.Salmon, rect, stringFormat);
-        }
-
-        //made for the sake of both the new and randomizer and any other possible thing that may need the grid reset beforehand
+        } 
+        #endregion
 
         //all Buttons
+        #region All Button functionality
         //activate timer for the game
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             timer.Start();
 
             graphicsPanel1.Invalidate();
+            Play.Enabled = false;
+            pause.Enabled = true;
         }
         // click for the new gen
         private void next_Click(object sender, EventArgs e)
         {
             NextGeneration();
-
             graphicsPanel1.Invalidate();
         }
 
@@ -461,8 +470,8 @@ namespace KimTerryGameOfLife
         private void pause_Click(object sender, EventArgs e)
         {
             timer.Stop();
-
-            //graphicsPanel1.Invalidate();
+            pause.Enabled = false;
+            Play.Enabled = true;
         }
 
 
@@ -525,11 +534,14 @@ namespace KimTerryGameOfLife
         private void Options_Click(object sender, EventArgs e)
         {
             Options_Dialog opdlg = new Options_Dialog();
-            
-            if(opdlg.DialogResult == DialogResult.OK)
+            if (DialogResult.OK == opdlg.ShowDialog())
             {
+                universe = new CellState[Properties.Settings.Default.UniWidth, Properties.Settings.Default.UniHeight];
+                setNextGenSize();
+                arrayInit();
 
             }
+            graphicsPanel1.Invalidate();
         }
 
         private void hUDToolStripMenuItem_Click(object sender, EventArgs e)
@@ -547,8 +559,34 @@ namespace KimTerryGameOfLife
         {
             GridControl();
         }
+        private void backColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BackgroundColor = CdialogControl(BackgroundColor);
+            SaveChanges();
+            graphicsPanel1.Invalidate();
+        }
+        private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            cellColor = CdialogControl(cellColor);
+            SaveChanges();
+            graphicsPanel1.Invalidate();
+        }
+        private void gridColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            gridColor = CdialogControl(gridColor);
+            SaveChanges();
+            graphicsPanel1.Invalidate();
+        }
 
-        //control Groups
+        private void gridx10ColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            grid10Color = CdialogControl(grid10Color);
+            SaveChanges();
+            graphicsPanel1.Invalidate();
+        } 
+        #endregion
+
+        //control Groups// All created functions for different uses
         #region Control
         //grid control
         private void GridControl()
@@ -558,8 +596,8 @@ namespace KimTerryGameOfLife
             gridToolStripMenuItem1.Checked = grid;
             if (grid == true)
             {
-                gridColor = dgrid;
-                grid10Color = dgrid10;
+                gridColor = KimTerryGameOfLife.Properties.Settings.Default.GridColor;
+                grid10Color = KimTerryGameOfLife.Properties.Settings.Default.Grid10Color;
             }
             else
             {
@@ -595,6 +633,8 @@ namespace KimTerryGameOfLife
 
             graphicsPanel1.Invalidate();
         }
+
+        //color dialog control for changing whatever needs to have a color change
         private Color CdialogControl(Color clr)
         {
             ColorDialog Cdlg = new ColorDialog();
@@ -605,32 +645,7 @@ namespace KimTerryGameOfLife
             }
             return clr;
         }
-        #endregion
 
-        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            BackgroundColor = CdialogControl(BackgroundColor);
-            graphicsPanel1.Invalidate();
-        }
-
-        private void saveRestor3(PaintEventArgs e)
-        {
-            // Translate transformation matrix.
-            e.Graphics.TranslateTransform(100, 0);
-
-            // Save translated graphics state.
-            GraphicsState transState = e.Graphics.Save();
-
-            // Reset transformation matrix to identity and fill rectangle.
-            e.Graphics.ResetTransform();
-            e.Graphics.FillRectangle(new SolidBrush(Color.Red), 0, 0, 100, 100);
-
-            // Restore graphics state to translated state and fill second
-
-            // rectangle.
-            e.Graphics.Restore(transState);
-            e.Graphics.FillRectangle(new SolidBrush(Color.Blue), 0, 0, 100, 100);
-        }
 
         //Load in user settings on open
         private void Form1_Load(object sender, EventArgs e)
@@ -639,9 +654,10 @@ namespace KimTerryGameOfLife
             gridColor = KimTerryGameOfLife.Properties.Settings.Default.GridColor;
             grid10Color = KimTerryGameOfLife.Properties.Settings.Default.Grid10Color;
             BackgroundColor = KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor;
+            Interval.Text = "Interval = " + Properties.Settings.Default.Interval.ToString();
 
         }
-        //Save user settings on close
+        //Save user settings on close //this is kinda redundant with the code below this
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             KimTerryGameOfLife.Properties.Settings.Default.CellColor = cellColor;
@@ -649,7 +665,17 @@ namespace KimTerryGameOfLife
             KimTerryGameOfLife.Properties.Settings.Default.Grid10Color = grid10Color;
             KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor = BackgroundColor;
             KimTerryGameOfLife.Properties.Settings.Default.Save();
-
         }
+
+        //save changes when they are made
+        private void SaveChanges()
+        {
+            KimTerryGameOfLife.Properties.Settings.Default.CellColor = cellColor;
+            KimTerryGameOfLife.Properties.Settings.Default.GridColor = gridColor;
+            KimTerryGameOfLife.Properties.Settings.Default.Grid10Color = grid10Color;
+            KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor = BackgroundColor;
+            KimTerryGameOfLife.Properties.Settings.Default.Save();
+        }
+        #endregion
     } 
 }
