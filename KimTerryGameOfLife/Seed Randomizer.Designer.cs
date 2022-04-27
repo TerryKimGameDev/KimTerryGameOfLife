@@ -98,7 +98,6 @@ namespace KimTerryGameOfLife
             this.Controls.Add(this.label1);
             this.Name = "Seed_Randomizer";
             this.Text = "Seed_Randomizer";
-            this.Load += new System.EventHandler(this.Seed_Randomizer_Load);
             ((System.ComponentModel.ISupportInitialize)(this.SeedUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

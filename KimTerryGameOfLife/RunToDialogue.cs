@@ -12,7 +12,11 @@ namespace KimTerryGameOfLife
 {
     public partial class RunToDialogue : Form
     {
+        //fields or properties
+
+        //generation for runto form
         public int generations { get; set; } = 0;
+        //stopat for runto form
         public int StopAt { get; private set; }
         public RunToDialogue()
         {
@@ -26,6 +30,7 @@ namespace KimTerryGameOfLife
             RunGen.Minimum = generations;
         }
 
+        //clicking ok stores the numeric value to property
         private void OK_Click(object sender, EventArgs e)
         {
             StopAt = (int)RunGen.Value;
