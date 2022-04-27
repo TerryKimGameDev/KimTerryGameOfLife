@@ -41,8 +41,11 @@ namespace KimTerryGameOfLife
         // The Timer class
         Timer timer = new Timer();
 
+        //stop at specific generations
+        int stopat = -1;
+
         // Generation count
-        int generations = 0;
+        public int generations = 0;
         //the interval for the timer
         int interval = Properties.Settings.Default.Interval;
         //set world state for toroidal or finite
@@ -94,6 +97,16 @@ namespace KimTerryGameOfLife
         {
             NextGeneration();
             graphicsPanel1.Invalidate();
+
+            if (generations == stopat)
+            {
+                Play.Enabled = true;
+                startToolStripMenuItem.Enabled = true;
+                pause.Enabled = false;
+                pauseToolStripMenuItem.Enabled = false;
+                timer.Stop();
+            }
+
         }
 
         #endregion Constructor/nextgeneration/timertick
@@ -422,6 +435,7 @@ namespace KimTerryGameOfLife
         //activate timer for the game
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
+            stopat = -1;
             timer.Start(); //starts timer.... duh to me
 
             graphicsPanel1.Invalidate();
@@ -433,13 +447,13 @@ namespace KimTerryGameOfLife
             pauseToolStripMenuItem.Enabled = true;
         }
 
-        // click for the new gen
+        // click for the next gen
         private void next_Click(object sender, EventArgs e)
         {
+            stopat = -1;
             NextGeneration();
             graphicsPanel1.Invalidate();
         }
-        
 
         //pause game
         private void pause_Click(object sender, EventArgs e)
@@ -453,6 +467,37 @@ namespace KimTerryGameOfLife
             startToolStripMenuItem.Enabled = true;
         }
 
+        //RunTo functionality
+        private void runToToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //stops timer
+            timer.Stop();
+
+            //activate and deactivate associated buttons
+            Play.Enabled = true;
+            startToolStripMenuItem.Enabled = true;
+            pause.Enabled = false;
+            pauseToolStripMenuItem.Enabled = false;
+
+            //initialize runto dialogue
+            RunToDialogue RunThrough = new RunToDialogue();
+            RunThrough.generations = generations;
+
+            //open run through
+            if (DialogResult.OK == RunThrough.ShowDialog())
+            {
+                //activate and deactivate associated buttons
+                Play.Enabled = false;
+                startToolStripMenuItem.Enabled = false;
+                pause.Enabled = true;
+                pauseToolStripMenuItem.Enabled = true;
+
+                //store stopat
+                stopat = RunThrough.StopAt;
+                //start timer
+                timer.Start();
+            }
+        }
 
         //finite view
         private void finiteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -590,6 +635,8 @@ namespace KimTerryGameOfLife
         {
             hudControl();
         }
+
+
 
         //context menu items
         #region Context menu items
@@ -1086,8 +1133,9 @@ namespace KimTerryGameOfLife
 
 
 
+
         #endregion User Settings
 
-
+        
     }
 }

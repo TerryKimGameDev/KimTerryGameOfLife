@@ -53,6 +53,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="RunToDialogue.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RunToDialogue.Designer.cs">
+      <DependentUpon>RunToDialogue.cs</DependentUpon>
+    </Compile>
     <Compile Include="GraphicsPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -72,6 +78,9 @@
     </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RunToDialogue.resx">
+      <DependentUpon>RunToDialogue.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Options Dialog.resx">
       <DependentUpon>Options Dialog.cs</DependentUpon>
