@@ -439,13 +439,7 @@ namespace KimTerryGameOfLife
             NextGeneration();
             graphicsPanel1.Invalidate();
         }
-
-        //clear grid/ new game
-        private void newToolStripButton_Click(object sender, EventArgs e)
-        {
-            //call to function so new grid
-            GridReset();
-        }
+        
 
         //pause game
         private void pause_Click(object sender, EventArgs e)
@@ -531,12 +525,6 @@ namespace KimTerryGameOfLife
             SeedStatus.Text = "Seed = " + seed.ToString();
             graphicsPanel1.Invalidate();
         }
-        //news the panal
-        private void newToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GridReset();
-        }
-
 
         //open up the random dialogue when clicked
         private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -603,6 +591,8 @@ namespace KimTerryGameOfLife
             hudControl();
         }
 
+        //context menu items
+        #region Context menu items
         //context sensitive hud activation
         private void hudToolStripMenuItem1_Click_1(object sender, EventArgs e)
         {
@@ -646,6 +636,7 @@ namespace KimTerryGameOfLife
             SaveChanges();
             graphicsPanel1.Invalidate();
         }
+        #endregion Context menu items
 
         //settings menu strip buttons
         #region Settings menu strip items
@@ -740,6 +731,7 @@ namespace KimTerryGameOfLife
             GridReset();
         }
         #endregion Settings menu strip items
+
         //run tool strip function buttons
         #region RunToolStripFunctions
 
@@ -776,6 +768,53 @@ namespace KimTerryGameOfLife
             graphicsPanel1.Invalidate();
         }
         #endregion RunToolStripFunctions
+
+        // New, save and load buttons
+        #region New, Save and load buttons
+        //clear grid/ new game
+        private void newToolStripButton_Click(object sender, EventArgs e)
+        {
+            //call to function so new grid
+            GridReset();
+        }
+        //save as
+        private void saveToolStripButton_Click(object sender, EventArgs e)
+        {
+            SaveFile();
+        }
+
+        //open txt
+        private void openToolStripButton_Click(object sender, EventArgs e)
+        {
+            OpenFile();
+        }
+        #endregion New, Save and load buttons
+
+        //tool strip file items
+        #region Tool strip Files
+        //news the panal
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GridReset();
+        }
+        //open file
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFile();
+        }
+        //save file
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFile();
+        }
+        //exit form
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+        #endregion
 
         #endregion All Buttons
 
@@ -872,47 +911,8 @@ namespace KimTerryGameOfLife
             return clr;
         }
 
-        #endregion All Controls
-
-        //User settings change functions
-        #region UserSettings
-        //Load in user settings on open
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            cellColor = KimTerryGameOfLife.Properties.Settings.Default.CellColor;
-            gridColor = KimTerryGameOfLife.Properties.Settings.Default.GridColor;
-            grid10Color = KimTerryGameOfLife.Properties.Settings.Default.Grid10Color;
-            BackgroundColor = KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor;
-            Interval.Text = "Interval = " + Properties.Settings.Default.Interval.ToString();
-            SeedStatus.Text = "Seed = " + Properties.Settings.Default.Seed.ToString();
-
-        }
-        //Save user settings on close //this is kinda redundant with the code below this
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            KimTerryGameOfLife.Properties.Settings.Default.CellColor = cellColor;
-            KimTerryGameOfLife.Properties.Settings.Default.GridColor = gridColor;
-            KimTerryGameOfLife.Properties.Settings.Default.Grid10Color = grid10Color;
-            KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor = BackgroundColor;
-            KimTerryGameOfLife.Properties.Settings.Default.Save();
-        }
-
-        //save changes when they are made
-        private void SaveChanges()
-        {
-            KimTerryGameOfLife.Properties.Settings.Default.CellColor = cellColor;
-            KimTerryGameOfLife.Properties.Settings.Default.GridColor = gridColor;
-            KimTerryGameOfLife.Properties.Settings.Default.Grid10Color = grid10Color;
-            KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor = BackgroundColor;
-            KimTerryGameOfLife.Properties.Settings.Default.Save();
-        }
-
-
-
-        #endregion User Settings
-
-        //save as
-        private void saveToolStripButton_Click(object sender, EventArgs e)
+        //save file
+        private void SaveFile()
         {
             //save dialogue and setup
             SaveFileDialog dlg = new SaveFileDialog();
@@ -941,7 +941,7 @@ namespace KimTerryGameOfLife
                     {
                         // If the universe[x,y] is alive then append 'O' (capital O)
                         // to the row string.
-                        if (universe[x,y].GetCellState() == true)
+                        if (universe[x, y].GetCellState() == true)
                         {
                             currentRow += 'O';
                         }
@@ -963,8 +963,8 @@ namespace KimTerryGameOfLife
             }
         }
 
-        //open txt
-        private void openToolStripButton_Click(object sender, EventArgs e)
+        //open file
+        private void OpenFile()
         {
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = "All Files|*.*|Cells|*.cells";
@@ -1048,5 +1048,46 @@ namespace KimTerryGameOfLife
                 reader.Close();
             }
         }
+
+        #endregion All Controls
+
+        //User settings change functions
+        #region UserSettings
+        //Load in user settings on open
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            cellColor = KimTerryGameOfLife.Properties.Settings.Default.CellColor;
+            gridColor = KimTerryGameOfLife.Properties.Settings.Default.GridColor;
+            grid10Color = KimTerryGameOfLife.Properties.Settings.Default.Grid10Color;
+            BackgroundColor = KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor;
+            Interval.Text = "Interval = " + Properties.Settings.Default.Interval.ToString();
+            SeedStatus.Text = "Seed = " + Properties.Settings.Default.Seed.ToString();
+
+        }
+        //Save user settings on close //this is kinda redundant with the code below this
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            KimTerryGameOfLife.Properties.Settings.Default.CellColor = cellColor;
+            KimTerryGameOfLife.Properties.Settings.Default.GridColor = gridColor;
+            KimTerryGameOfLife.Properties.Settings.Default.Grid10Color = grid10Color;
+            KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor = BackgroundColor;
+            KimTerryGameOfLife.Properties.Settings.Default.Save();
+        }
+
+        //save changes when they are made
+        private void SaveChanges()
+        {
+            KimTerryGameOfLife.Properties.Settings.Default.CellColor = cellColor;
+            KimTerryGameOfLife.Properties.Settings.Default.GridColor = gridColor;
+            KimTerryGameOfLife.Properties.Settings.Default.Grid10Color = grid10Color;
+            KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor = BackgroundColor;
+            KimTerryGameOfLife.Properties.Settings.Default.Save();
+        }
+
+
+
+        #endregion User Settings
+
+
     }
 }
