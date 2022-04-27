@@ -25,7 +25,7 @@ namespace KimTerryGameOfLife.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
         public uint UniWidth {
             get {
                 return ((uint)(this["UniWidth"]));
@@ -37,7 +37,7 @@ namespace KimTerryGameOfLife.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
         public uint UniHeight {
             get {
                 return ((uint)(this["UniHeight"]));

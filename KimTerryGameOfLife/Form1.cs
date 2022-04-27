@@ -33,11 +33,8 @@ namespace KimTerryGameOfLife
         //textbrush
         Brush tBrush = new SolidBrush(Color.Red);
 
-        //for default colors when reloading //sill be use to store the property colors on loading form
-        Color dgrid = Color.Black;
-        Color dgrid10 = Color.Black;
-        Color dcell = Color.Gray;
-        Color dback = Color.White;
+        //stores the seed on load for the reload logic
+        int Lseed = Properties.Settings.Default.Seed;
 
 
         // The Timer class
@@ -430,7 +427,9 @@ namespace KimTerryGameOfLife
 
             //enable and disable buttons
             Play.Enabled = false;
+            startToolStripMenuItem.Enabled = false;
             pause.Enabled = true;
+            pauseToolStripMenuItem.Enabled = true;
         }
 
         // click for the new gen
@@ -454,7 +453,9 @@ namespace KimTerryGameOfLife
 
             //enable and disable button
             pause.Enabled = false;
+            pauseToolStripMenuItem.Enabled = false;
             Play.Enabled = true;
+            startToolStripMenuItem.Enabled = true;
         }
 
 
@@ -535,32 +536,7 @@ namespace KimTerryGameOfLife
             GridReset();
         }
 
-        //open us the options dialogue when clicked
-        private void Options_Click(object sender, EventArgs e)
-        {
-            //options dialog box
-            Options_Dialog opdlg = new Options_Dialog();
-
-            if (DialogResult.OK == opdlg.ShowDialog())
-            {
-                //set interval display for the status bar
-                Interval.Text = "Interval = " + Properties.Settings.Default.Interval.ToString();
-
-                //change what interval value is used for timer
-                timer.Interval = Properties.Settings.Default.Interval;
-
-                //if check so to not new univer should nothing have been changed
-                if (universe.GetLength(0) != Properties.Settings.Default.UniWidth || universe.GetLength(1) != Properties.Settings.Default.UniHeight)
-                {
-                    //set universe and scratchpad size
-                    universe = new CellState[Properties.Settings.Default.UniWidth, Properties.Settings.Default.UniHeight];
-                    setNextGenSize();
-                    arrayInit();
-                }
-
-            }
-            graphicsPanel1.Invalidate();
-        }
+        
         //open up the random dialogue when clicked
         private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -669,6 +645,137 @@ namespace KimTerryGameOfLife
             SaveChanges();
             graphicsPanel1.Invalidate();
         }
+
+        //settings menu strip buttons
+        #region Settings menu strip items
+        //back color
+        private void backColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            BackgroundColor = CdialogControl(BackgroundColor);
+            SaveChanges();
+            graphicsPanel1.Invalidate();
+        }
+
+        //cell color
+        private void cellColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            cellColor = CdialogControl(cellColor);
+            SaveChanges();
+            graphicsPanel1.Invalidate();
+        }
+
+        //grid color
+        private void gridColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            gridColor = CdialogControl(gridColor);
+            SaveChanges();
+            graphicsPanel1.Invalidate();
+        }
+
+        //gridx10 color
+        private void gridx10ColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            grid10Color = CdialogControl(grid10Color);
+            SaveChanges();
+            graphicsPanel1.Invalidate();
+        }
+
+        //open us the options dialogue when clicked
+        private void Options_Click(object sender, EventArgs e)
+        {
+            //options dialog box
+            Options_Dialog opdlg = new Options_Dialog();
+
+            if (DialogResult.OK == opdlg.ShowDialog())
+            {
+                //set interval display for the status bar
+                Interval.Text = "Interval = " + Properties.Settings.Default.Interval.ToString();
+
+                //change what interval value is used for timer
+                timer.Interval = Properties.Settings.Default.Interval;
+
+                //if check so to not new univer should nothing have been changed
+                if (universe.GetLength(0) != Properties.Settings.Default.UniWidth || universe.GetLength(1) != Properties.Settings.Default.UniHeight)
+                {
+                    //set universe and scratchpad size
+                    universe = new CellState[Properties.Settings.Default.UniWidth, Properties.Settings.Default.UniHeight];
+                    setNextGenSize();
+                    arrayInit();
+                }
+
+            }
+            graphicsPanel1.Invalidate();
+        }
+
+        //reset the universe and colors to true default settings
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Reset();
+            universe = new CellState[Properties.Settings.Default.UniWidth, Properties.Settings.Default.UniHeight];
+            cellColor = KimTerryGameOfLife.Properties.Settings.Default.CellColor;
+            gridColor = KimTerryGameOfLife.Properties.Settings.Default.GridColor;
+            grid10Color = KimTerryGameOfLife.Properties.Settings.Default.Grid10Color;
+            BackgroundColor = KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor;
+            timer.Interval = Properties.Settings.Default.Interval;
+            Interval.Text = "Interval = "+ timer.Interval.ToString();
+            SeedStatus.Text = Properties.Settings.Default.Seed.ToString();
+            GridReset();
+            
+        }
+
+        //reload the user settings
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Reload();
+            universe = new CellState[Properties.Settings.Default.UniWidth, Properties.Settings.Default.UniHeight];
+            cellColor = KimTerryGameOfLife.Properties.Settings.Default.CellColor;
+            gridColor = KimTerryGameOfLife.Properties.Settings.Default.GridColor;
+            grid10Color = KimTerryGameOfLife.Properties.Settings.Default.Grid10Color;
+            BackgroundColor = KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor;
+            timer.Interval = Properties.Settings.Default.Interval;
+            Interval.Text = "Interval = " + timer.Interval.ToString();
+            Properties.Settings.Default.Seed = Lseed;
+            SeedStatus.Text = Lseed.ToString();
+            GridReset();
+        }
+        #endregion Settings menu strip items
+        //run tool strip function buttons
+        #region RunToolStripFunctions
+
+        //start timer
+        private void startToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            timer.Start(); //starts timer....
+
+            graphicsPanel1.Invalidate();
+
+            //enable and disable buttons
+            Play.Enabled = false;
+            startToolStripMenuItem.Enabled = false;
+            pause.Enabled = true;
+            pauseToolStripMenuItem.Enabled = true;
+        }
+
+        //pause timer
+        private void pauseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            timer.Stop(); //pause timer
+
+            //enable and disable button
+            pause.Enabled = false;
+            pauseToolStripMenuItem.Enabled = false;
+            Play.Enabled = true;
+            startToolStripMenuItem.Enabled = true;
+        }
+
+        //next gen
+        private void nextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NextGeneration();
+            graphicsPanel1.Invalidate();
+        }
+        #endregion RunToolStripFunctions
+
         #endregion All Buttons
 
         //control Groups// All created functions for different uses
@@ -799,7 +906,9 @@ namespace KimTerryGameOfLife
             KimTerryGameOfLife.Properties.Settings.Default.Save();
         }
 
+
         #endregion User Settings
-        
+
+
     }
 }
