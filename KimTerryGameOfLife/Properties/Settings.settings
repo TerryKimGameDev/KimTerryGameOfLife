@@ -21,10 +21,10 @@
       <Value Profile="(Default)">White</Value>
     </Setting>
     <Setting Name="Seed" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">2001</Value>
     </Setting>
     <Setting Name="Interval" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">20</Value>
     </Setting>
   </Settings>
 </SettingsFile>

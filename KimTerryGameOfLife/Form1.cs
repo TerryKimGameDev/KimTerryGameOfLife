@@ -165,7 +165,7 @@ namespace KimTerryGameOfLife
                     //the display for the neighbors based on count and bool
                     if (count > 0 && DisplayCount == true)
                     {
-                        NeighborDisplay(e, x, y, count);
+                        NeighborDisplay(e, cellRect, count);
                     }
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
@@ -268,52 +268,22 @@ namespace KimTerryGameOfLife
             }
         }
 
-        //display neighbor count //honestly could have used rectangle for all the positoning logic but gave a friend that code to use instead
-        private void NeighborDisplay(PaintEventArgs e, int x, int y, int count)
+        //display neighbor count
+        private void NeighborDisplay(PaintEventArgs e, RectangleF rect, int count)
         {
-            //pen 
-            Pen gridPen = new Pen(gridColor, 1);
-            //color of cell
-            Brush cellBrush = new SolidBrush(cellColor);
-
-            Brush DBrush = new SolidBrush(BackgroundColor);
-
-            // Calculate the width and height of each cell in pixels
-            // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
-            float cellWidth = (float)graphicsPanel1.ClientSize.Width / (float)universe.GetLength(0) - 0.01f;
             // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = (float)graphicsPanel1.ClientSize.Height / (float)universe.GetLength(1) - 0.01f;
 
             //string format settings
-            Font font = new Font("Arial", cellHeight * 0.7f);
+            Font font = new Font("Arial", cellHeight * 0.7f, FontStyle.Bold);
             StringFormat stringFormat = new StringFormat();
             stringFormat.Alignment = StringAlignment.Center;
             stringFormat.LineAlignment = StringAlignment.Center;
 
-
-            RectangleF rect = new RectangleF(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
-            //int neighbors = 8;
-
-            //logic for live or dead cell filling...
-            if (universe[x, y].GetCellState() == true)
-            {
-                e.Graphics.FillRectangle(cellBrush, rect);
-            }
-            else
-            {
-                e.Graphics.FillRectangle(DBrush, rect);
-            }
-            //Brush tBrush = new SolidBrush(cellColor);
-
-            //e.Graphics.FillRectangle(cellBrush, rect);
-            e.Graphics.DrawRectangle(gridPen, (x) * cellWidth, (y) * cellHeight, cellWidth, cellHeight); //not really necessary
             //draws neighbor count to display
             e.Graphics.DrawString((count).ToString(), font, tBrush, rect, stringFormat);
-
-            gridPen.Dispose();
-            cellBrush.Dispose();
-            tBrush.Dispose();
         }
+
         //finite universe
         private int CountNeighborsFinite(int x, int y)
         {
@@ -519,12 +489,25 @@ namespace KimTerryGameOfLife
             GridControl();
         }
 
-
-        //creates the random seed //will be updated later
-        private void Randomize_Click(object sender, EventArgs e)
+        //seed from time
+        private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //clear universe
             GridReset();
-            Random Rint = new Random(DateTime.Now.Millisecond);
+
+            //rand based on time
+            Random time = new Random(DateTime.Now.Millisecond);
+
+            //get seed value
+            int seed = time.Next(int.MinValue, int.MaxValue);
+
+            //change prop seed
+            Properties.Settings.Default.Seed = seed;
+
+            //seed the random
+            Random Rint = new Random(seed);
+
+            //fill values for live/ dead cells
             for (int i = 0; i < universe.GetLength(0); i++)
             {
                 for (int j = 0; j < universe.GetLength(1); j++)
@@ -537,9 +520,9 @@ namespace KimTerryGameOfLife
                     else universe[i, j].SetLcells(false);
                 }
             }
+            SeedStatus.Text = "Seed = " + seed.ToString();
             graphicsPanel1.Invalidate();
         }
-
         //news the panal
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -569,7 +552,65 @@ namespace KimTerryGameOfLife
             }
             graphicsPanel1.Invalidate();
         }
+        //open up the random dialogue when clicked
+        private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //randomizer dialog box
+            Seed_Randomizer RanDLg = new Seed_Randomizer();
+            
+            if (DialogResult.OK == RanDLg.ShowDialog())
+            {
+                //clear grid
+                GridReset();
+                //seed random
+                Random Rint = new Random(Properties.Settings.Default.Seed);
 
+                //fill universe based on seed
+                for (int i = 0; i < universe.GetLength(0); i++)
+                {
+                    for (int j = 0; j < universe.GetLength(1); j++)
+                    {
+                        int num = Rint.Next(0, 3);
+                        if (num == 0)
+                        {
+                            universe[i, j].SetLcells(true);
+                        }
+                        else universe[i, j].SetLcells(false);
+                    }
+                }
+                SeedStatus.Text = "Seed = " + Properties.Settings.Default.Seed.ToString();
+            }
+            graphicsPanel1.Invalidate();
+        }
+
+        //from current seed
+        private void currentSeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //clear the universe
+            GridReset();
+
+            //store seed
+            int seed = Properties.Settings.Default.Seed;
+            
+            //seed random
+            Random Rint = new Random(seed);
+
+            //fill values for live/ dead cells
+            for (int i = 0; i < universe.GetLength(0); i++)
+            {
+                for (int j = 0; j < universe.GetLength(1); j++)
+                {
+                    int num = Rint.Next(0, 3);
+                    if (num == 0)
+                    {
+                        universe[i, j].SetLcells(true);
+                    }
+                    else universe[i, j].SetLcells(false);
+                }
+            }
+            SeedStatus.Text = "Seed = " + seed.ToString();
+            graphicsPanel1.Invalidate();
+        }
         //Hud activate/deactivate
         private void hUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -684,6 +725,8 @@ namespace KimTerryGameOfLife
         {
             timer.Stop();
             generations = 0;
+            Play.Enabled = true;
+            pause.Enabled = false;
 
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
             setNextGenSize();
@@ -724,6 +767,7 @@ namespace KimTerryGameOfLife
             grid10Color = KimTerryGameOfLife.Properties.Settings.Default.Grid10Color;
             BackgroundColor = KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor;
             Interval.Text = "Interval = " + Properties.Settings.Default.Interval.ToString();
+            SeedStatus.Text = "Seed = " + Properties.Settings.Default.Seed.ToString();
 
         }
         //Save user settings on close //this is kinda redundant with the code below this
@@ -745,6 +789,9 @@ namespace KimTerryGameOfLife
             KimTerryGameOfLife.Properties.Settings.Default.BackgroundColor = BackgroundColor;
             KimTerryGameOfLife.Properties.Settings.Default.Save();
         }
+
         #endregion User Settings
+
+        
     }
 }

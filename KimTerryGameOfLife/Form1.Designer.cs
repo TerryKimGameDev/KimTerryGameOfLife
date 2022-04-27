@@ -48,6 +48,9 @@ namespace KimTerryGameOfLife
             this.finiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toriToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Randomize = new System.Windows.Forms.ToolStripMenuItem();
+            this.fromSeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.currentSeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fromTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Options = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,6 +71,9 @@ namespace KimTerryGameOfLife
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelGenerations = new System.Windows.Forms.ToolStripStatusLabel();
+            this.Interval = new System.Windows.Forms.ToolStripStatusLabel();
+            this.AliveCells = new System.Windows.Forms.ToolStripStatusLabel();
+            this.SeedStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.colorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -79,9 +85,6 @@ namespace KimTerryGameOfLife
             this.gridToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.countneighborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.graphicsPanel1 = new KimTerryGameOfLife.GraphicsPanel();
-            this.Interval = new System.Windows.Forms.ToolStripStatusLabel();
-            this.AliveCells = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -183,7 +186,7 @@ namespace KimTerryGameOfLife
             this.hUDToolStripMenuItem.Checked = true;
             this.hUDToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.hUDToolStripMenuItem.Name = "hUDToolStripMenuItem";
-            this.hUDToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hUDToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.hUDToolStripMenuItem.Text = "HUD";
             this.hUDToolStripMenuItem.Click += new System.EventHandler(this.hUDToolStripMenuItem_Click);
             // 
@@ -193,7 +196,7 @@ namespace KimTerryGameOfLife
             this.NeighborCount.CheckOnClick = true;
             this.NeighborCount.CheckState = System.Windows.Forms.CheckState.Checked;
             this.NeighborCount.Name = "NeighborCount";
-            this.NeighborCount.Size = new System.Drawing.Size(180, 22);
+            this.NeighborCount.Size = new System.Drawing.Size(160, 22);
             this.NeighborCount.Text = "Neighbor Count";
             this.NeighborCount.Click += new System.EventHandler(this.NeighborCount_Click);
             // 
@@ -202,19 +205,19 @@ namespace KimTerryGameOfLife
             this.gridToolStripMenuItem.Checked = true;
             this.gridToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.gridToolStripMenuItem.Name = "gridToolStripMenuItem";
-            this.gridToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.gridToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.gridToolStripMenuItem.Text = "Grid";
             this.gridToolStripMenuItem.Click += new System.EventHandler(this.gridToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
             // 
             // finiteToolStripMenuItem
             // 
             this.finiteToolStripMenuItem.Name = "finiteToolStripMenuItem";
-            this.finiteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.finiteToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.finiteToolStripMenuItem.Text = "Finite";
             this.finiteToolStripMenuItem.Click += new System.EventHandler(this.finiteToolStripMenuItem_Click);
             // 
@@ -223,16 +226,40 @@ namespace KimTerryGameOfLife
             this.toriToolStripMenuItem.Checked = true;
             this.toriToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.toriToolStripMenuItem.Name = "toriToolStripMenuItem";
-            this.toriToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toriToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.toriToolStripMenuItem.Text = "Toroidal";
             this.toriToolStripMenuItem.Click += new System.EventHandler(this.toriToolStripMenuItem_Click);
             // 
             // Randomize
             // 
+            this.Randomize.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fromSeedToolStripMenuItem,
+            this.currentSeedToolStripMenuItem,
+            this.fromTimeToolStripMenuItem});
             this.Randomize.Name = "Randomize";
             this.Randomize.Size = new System.Drawing.Size(78, 20);
             this.Randomize.Text = "Randomize";
-            this.Randomize.Click += new System.EventHandler(this.Randomize_Click);
+            // 
+            // fromSeedToolStripMenuItem
+            // 
+            this.fromSeedToolStripMenuItem.Name = "fromSeedToolStripMenuItem";
+            this.fromSeedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.fromSeedToolStripMenuItem.Text = "From Seed";
+            this.fromSeedToolStripMenuItem.Click += new System.EventHandler(this.fromSeedToolStripMenuItem_Click);
+            // 
+            // currentSeedToolStripMenuItem
+            // 
+            this.currentSeedToolStripMenuItem.Name = "currentSeedToolStripMenuItem";
+            this.currentSeedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.currentSeedToolStripMenuItem.Text = "Current Seed";
+            this.currentSeedToolStripMenuItem.Click += new System.EventHandler(this.currentSeedToolStripMenuItem_Click);
+            // 
+            // fromTimeToolStripMenuItem
+            // 
+            this.fromTimeToolStripMenuItem.Name = "fromTimeToolStripMenuItem";
+            this.fromTimeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.fromTimeToolStripMenuItem.Text = "From Time";
+            this.fromTimeToolStripMenuItem.Click += new System.EventHandler(this.fromTimeToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -389,7 +416,7 @@ namespace KimTerryGameOfLife
             this.toolStripStatusLabelGenerations,
             this.Interval,
             this.AliveCells,
-            this.toolStripStatusLabel1});
+            this.SeedStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 323);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(573, 22);
@@ -401,6 +428,24 @@ namespace KimTerryGameOfLife
             this.toolStripStatusLabelGenerations.Name = "toolStripStatusLabelGenerations";
             this.toolStripStatusLabelGenerations.Size = new System.Drawing.Size(90, 17);
             this.toolStripStatusLabelGenerations.Text = "Generations = 0";
+            // 
+            // Interval
+            // 
+            this.Interval.Name = "Interval";
+            this.Interval.Size = new System.Drawing.Size(72, 17);
+            this.Interval.Text = "Interval = 20";
+            // 
+            // AliveCells
+            // 
+            this.AliveCells.Name = "AliveCells";
+            this.AliveCells.Size = new System.Drawing.Size(53, 17);
+            this.AliveCells.Text = "Alive = 0";
+            // 
+            // SeedStatus
+            // 
+            this.SeedStatus.Name = "SeedStatus";
+            this.SeedStatus.Size = new System.Drawing.Size(70, 17);
+            this.SeedStatus.Text = "Seed = 2001";
             // 
             // contextMenuStrip1
             // 
@@ -499,24 +544,6 @@ namespace KimTerryGameOfLife
             this.graphicsPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.graphicsPanel1_Paint);
             this.graphicsPanel1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.graphicsPanel1_MouseClick);
             // 
-            // Interval
-            // 
-            this.Interval.Name = "Interval";
-            this.Interval.Size = new System.Drawing.Size(72, 17);
-            this.Interval.Text = "Interval = 20";
-            // 
-            // AliveCells
-            // 
-            this.AliveCells.Name = "AliveCells";
-            this.AliveCells.Size = new System.Drawing.Size(53, 17);
-            this.AliveCells.Text = "Alive = 0";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -595,7 +622,10 @@ namespace KimTerryGameOfLife
         private System.Windows.Forms.ToolStripMenuItem gridx10ColorToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel Interval;
         private System.Windows.Forms.ToolStripStatusLabel AliveCells;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel SeedStatus;
+        private System.Windows.Forms.ToolStripMenuItem fromSeedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem currentSeedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fromTimeToolStripMenuItem;
     }
 }
 
