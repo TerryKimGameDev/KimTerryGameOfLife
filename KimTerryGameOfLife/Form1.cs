@@ -33,9 +33,11 @@ namespace KimTerryGameOfLife
         //textbrush
         Brush tBrush = new SolidBrush(Color.Red);
 
-        //for default grid color
+        //for default colors when reloading //sill be use to store the property colors on loading form
         Color dgrid = Color.Black;
         Color dgrid10 = Color.Black;
+        Color dcell = Color.Gray;
+        Color dback = Color.White;
 
 
         // The Timer class
@@ -57,11 +59,13 @@ namespace KimTerryGameOfLife
         CellState[,] NextGen; //this is the scratchpad 
         #endregion All MemberFields
 
+        //ctor/nextgen/timertick
+        #region Constructor/nextgeneration/timertick
         //constructor for form1
         public Form1()
         {
             InitializeComponent();
-            
+
             //setup for the universe size and initialization of the scratchpad and universe
             universe = new CellState[Properties.Settings.Default.UniWidth, Properties.Settings.Default.UniHeight];
             setNextGenSize();
@@ -75,7 +79,6 @@ namespace KimTerryGameOfLife
             //timer.Enabled = true; // start timer running
 
         }
-        
 
         // Calculate the next generation of cells
         private void NextGeneration()
@@ -87,7 +90,6 @@ namespace KimTerryGameOfLife
 
             swap();
         }
-        
 
         // The event called by the timer every Interval milliseconds.
         private void Timer_Tick(object sender, EventArgs e)
@@ -96,6 +98,8 @@ namespace KimTerryGameOfLife
             graphicsPanel1.Invalidate();
         }
 
+        #endregion Constructor/nextgeneration/timertick
+
         //graphics panel funtionality
         #region All Display/ graphics panel funcionality
 
@@ -103,7 +107,6 @@ namespace KimTerryGameOfLife
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
             //int for live cell count for the hud
-            int Lcell = 0;
 
             //added an int for the count
             int count;
@@ -124,6 +127,7 @@ namespace KimTerryGameOfLife
             //default cell colors or when dead cause I did not like using panel back color
             Brush Dbrush = new SolidBrush(BackgroundColor);
 
+            int Lcell = 0;
             // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
             {
@@ -149,6 +153,8 @@ namespace KimTerryGameOfLife
                         e.Graphics.FillRectangle(Dbrush, cellRect); //should not have been need but did it this way anyways
                     }
 
+                    //change value in status bar
+                    AliveCells.Text = "Alive = " + Lcell.ToString();
                     //Change to toroidal or finite base on a bool
                     if (world == false)
                     {
@@ -538,10 +544,13 @@ namespace KimTerryGameOfLife
             if (DialogResult.OK == opdlg.ShowDialog())
             {
                 //set interval display for the status bar
-                Interval.Text = Properties.Settings.Default.Interval.ToString();
+                Interval.Text = "Interval = " + Properties.Settings.Default.Interval.ToString();
+
+                //change what interval value is used for timer
+                timer.Interval = Properties.Settings.Default.Interval;
 
                 //if check so to not new univer should nothing have been changed
-                if (universe.GetLength(0) == Properties.Settings.Default.UniWidth && universe.GetLength(1) == Properties.Settings.Default.UniHeight)
+                if (universe.GetLength(0) != Properties.Settings.Default.UniWidth || universe.GetLength(1) != Properties.Settings.Default.UniHeight)
                 {
                     //set universe and scratchpad size
                     universe = new CellState[Properties.Settings.Default.UniWidth, Properties.Settings.Default.UniHeight];
@@ -791,7 +800,6 @@ namespace KimTerryGameOfLife
         }
 
         #endregion User Settings
-
         
     }
 }
