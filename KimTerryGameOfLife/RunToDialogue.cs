@@ -28,6 +28,7 @@ namespace KimTerryGameOfLife
         {
             RunGen.Value = generations + 1;
             RunGen.Minimum = generations;
+            RunGen.Maximum = int.MaxValue;
         }
 
         //clicking ok stores the numeric value to property

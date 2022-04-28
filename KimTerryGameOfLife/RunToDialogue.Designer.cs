@@ -60,6 +60,11 @@ namespace KimTerryGameOfLife
             // RunGen
             // 
             this.RunGen.Location = new System.Drawing.Point(145, 51);
+            this.RunGen.Maximum = new decimal(new int[] {
+            100000000,
+            0,
+            0,
+            0});
             this.RunGen.Name = "RunGen";
             this.RunGen.Size = new System.Drawing.Size(89, 20);
             this.RunGen.TabIndex = 2;
